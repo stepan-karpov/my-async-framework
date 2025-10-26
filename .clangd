@@ -1,0 +1,16 @@
+# === CLANGD SETTINGS ===
+# Clangd - C++ formatting and code analysis engine
+# This file configures clangd for the project
+CompileFlags:
+  CompilationDatabase: build
+  Add:
+    - -std=c++20
+    - -stdlib=libc++
+    - -target
+    - arm64-apple-macos
+
+Diagnostics:
+  UnusedIncludes: None
+
+Index:
+  Background: Build
