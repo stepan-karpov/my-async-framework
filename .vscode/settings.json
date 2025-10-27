@@ -64,7 +64,7 @@
     "**/*.trash": true
   },
   "code-runner.executorMap": {
-    "cpp": "cmake .. && cmake --build . && ./server"
+    "cpp": "cmake .. && cmake --build . && ./my-server/my-server-bin"
   },
   "code-runner.runInTerminal": true
 }

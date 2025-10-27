@@ -1,24 +1,17 @@
-#include <iostream>
-#include <string>
+#include "simple-executor.hpp"
+
 #include <thread>
 #include <chrono>
-#include <unistd.h>      // For close()
-#include <sys/socket.h>  // For sockets
-#include <netinet/in.h>  // For sockaddr_in
 
-#include <fmt/format.h>
+#include <my-async-framework/logging/logging.hpp>
 
-#include "static_settings.hpp"
-
-#include <my-async-framework/server.hpp>
-
-
-int total_called = 0;
-
-void Executor(const int socket) {
+void SimpleExecutor(const int socket) {
+  static std::atomic<int> total_called = 0;
   LOG_INFO(fmt::format("Handling connection {}", socket));
   std::this_thread::sleep_for(std::chrono::seconds(10));
-  ++total_called;
+  total_called.fetch_add(1);
+
+  LOG_INFO(fmt::format("Total called: {}", total_called.load()));
   // // 5. Read data from client
   // char buffer[BUFFER_SIZE] = {0};
   // read(socket, buffer, BUFFER_SIZE);
@@ -29,14 +22,4 @@ void Executor(const int socket) {
   // send(socket, hello, strlen(hello), 0);
   // LOG_INFO("Message sent to client");
   // close(socket);
-}
-
-int main() {
-  MyAsyncFramework::Server server(Executor);
-
-  server.ListenAndServe();
-
-  LOG_INFO(fmt::format("Total called: {}", total_called));
-
-  return 0;
 }
