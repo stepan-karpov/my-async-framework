@@ -60,7 +60,8 @@
     "algorithm": "cpp",
     "thread": "cpp",
     "queue": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "__nullptr": "cpp"
   },
   "files.exclude": {
     "**/*.trash": true

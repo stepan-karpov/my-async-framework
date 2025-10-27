@@ -6,7 +6,10 @@
 // #define LOG_LEVEL_INFO
 // #define LOG_LEVEL_ERROR
 
-#define PORT 8081
+#define PORT 8082
 
-#define DEBUG_MODE
+// Server shutdown timeout (in seconds) for checking should_stop flag
+#define SERVER_ACCEPT_TIMEOUT_SECONDS 1
+
+// #define DEBUG_MODE
 

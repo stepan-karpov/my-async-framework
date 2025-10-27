@@ -5,7 +5,7 @@
 #include <netinet/in.h>  // Для sockaddr_in
 
 #define PORT 8082
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 12
 
 template <typename T>
 void OutputBinary(const T& x) {
@@ -41,7 +41,7 @@ int main() {
 
     // 3. Начинаем слушать входящие соединения
     std::cout << "Сервер слушает порт " << PORT << std::endl;
-    if (listen(server_fd, 3) < 0) { // 3 - максимальное число соединений в очереди
+    if (listen(server_fd, 20) < 0) { // 3 - максимальное число соединений в очереди
         perror("listen failed");
         close(server_fd);
         return 1;
@@ -57,16 +57,17 @@ int main() {
             return 1;
         }
         std::cout << "Соединение принято!" << std::endl;
+        
+        for (int i = 0; i < 50000; ++i) {
+            // 5. Читаем данные от клиента
+            char buffer[BUFFER_SIZE] = {0};
+            read(new_socket, buffer, BUFFER_SIZE);
+            size_t sum = 0;
+            for (const char c : buffer) { sum += c; }
     
-        // 5. Читаем данные от клиента
-        char buffer[BUFFER_SIZE] = {0};
-        read(new_socket, buffer, BUFFER_SIZE);
-        std::cout << "Клиент: " << buffer << std::endl;
-    
-        // 6. Отправляем ответ клиенту
-        const char *hello = "Привет от сервера!";
-        send(new_socket, hello, strlen(hello), 0);
-        std::cout << "Сообщение отправлено клиенту" << std::endl;
+            std::string response_str = std::to_string(sum);
+            send(new_socket, response_str.c_str(), strlen(response_str.c_str()), 0);
+        }
         close(new_socket);
     }
 

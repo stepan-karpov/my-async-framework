@@ -13,15 +13,14 @@ using Queue = queues::UnboundedSyncSpMcQueue<>;
 
 class ThreadWorkerExecutor {
 public:
-  ThreadWorkerExecutor(const int number, Queue& queue, std::atomic<bool>& should_be_stopped)
+  ThreadWorkerExecutor(const int number, Queue& queue)
     : thread_pool_queue_(queue),
-      should_be_stopped_(should_be_stopped),
       kMyNumberAsAThread_(number) {
     LOG_DEBUG(fmt::format("Executor {} start executing", number));
   }
 
   void Execute() {
-    while (!should_be_stopped_.load()) {
+    while (true) {
       auto next_worker = thread_pool_queue_.PopFront();
       LOG_DEBUG(fmt::format("ThreadWorkerExecutor number {} executing his task", kMyNumberAsAThread_));
       next_worker();
@@ -30,7 +29,6 @@ public:
   }
 private:
   Queue& thread_pool_queue_;
-  std::atomic<bool>& should_be_stopped_;
   const int kMyNumberAsAThread_;
 };
 
@@ -49,7 +47,6 @@ private:
 
   Queue queue_;
   std::vector<std::thread> worker_threads_;
-  std::atomic<bool> should_be_stopped_;
 
   const int kWorkerThreads = 4;
 };

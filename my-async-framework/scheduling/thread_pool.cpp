@@ -21,7 +21,7 @@ void ThreadPool::AllocateAndStartWorkerThreads() {
   worker_threads_.reserve(kWorkerThreads);
   for (size_t i = 0; i < kWorkerThreads; ++i) {
     worker_threads_.emplace_back([this, i]() {
-      ThreadWorkerExecutor executor(i, queue_, should_be_stopped_);
+      ThreadWorkerExecutor executor(i, queue_);
       executor.Execute();
     });
   }
@@ -30,17 +30,17 @@ void ThreadPool::AllocateAndStartWorkerThreads() {
 
 void ThreadPool::Stop() {
   LOG_DEBUG("Stopping ThreadPool");
-  should_be_stopped_.store(true);
 
   for (auto& worker_thread : worker_threads_) {
+    pthread_t thread_handle = worker_thread.native_handle();
+    int result = pthread_cancel(thread_handle); // TODO: think of more safe thread cancellation
+    if (result != 0) {
+      LOG_ERROR(fmt::format("Error sending signal: {}", result));
+    }
     worker_thread.join();
   }
 
   LOG_DEBUG(fmt::format("Number of uncompleted tasks in Thread Pool is {}", queue_.Size()));
 }
 
-ThreadPool::~ThreadPool() {
-  if (!should_be_stopped_.load()) {
-    Stop();
-  }
-}
+ThreadPool::~ThreadPool() {}

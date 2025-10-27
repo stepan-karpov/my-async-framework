@@ -4,6 +4,7 @@
 #include <string>
 #include <unistd.h>      // For close()
 #include <sys/socket.h>  // For sockets
+#include <sys/select.h>  // For select()
 #include <signal.h>      // For signal handling
 #include <atomic>        // For interrupt flag
 #include <thread>        // For sleep_for
@@ -12,9 +13,9 @@
 
 using namespace MyAsyncFramework;
 
-// Global flag for tracking Ctrl+C press
 namespace {
-
+  
+// Global flag for tracking Ctrl+C press
 std::atomic<bool> should_stop(false);
 
 void signalHandler(int signum) {
@@ -70,16 +71,43 @@ Server::ServerInfo Server::InitializeServer() {
 void Server::Listen() {
   const int addrlen = sizeof(kServerInfo_.address);
 
-  // 4. Accept incoming connection (this is a blocking call)
   while (!should_stop) {
-    int new_socket;
-    if ((new_socket = accept(kServerInfo_.server_fd, (struct sockaddr *)&kServerInfo_.address, (socklen_t*)&addrlen)) < 0) {
-      perror("accept failed");
-      throw std::runtime_error("An error occurred while accepting socket connection");
+    // Use select() with timeout to periodically check should_stop flag
+    fd_set read_fds;
+    FD_ZERO(&read_fds);
+    FD_SET(kServerInfo_.server_fd, &read_fds);
+    
+    struct timeval timeout;
+    timeout.tv_sec = SERVER_ACCEPT_TIMEOUT_SECONDS;
+    timeout.tv_usec = 0;
+    
+    int select_result = select(kServerInfo_.server_fd + 1, &read_fds, nullptr, nullptr, &timeout);
+    
+    if (select_result < 0) {
+      if (should_stop) {
+        break;
+      }
+      perror("select failed");
+      throw std::runtime_error("An error occurred in select()");
     }
-    LOG_DEBUG("Connection accepted!");
-    scheduling::Worker worker(executor_, new_socket);
-    thread_pool_.AddTask(std::move(worker));
+    
+    // Timeout - check should_stop flag and continue loop
+    if (select_result == 0) {
+      continue;
+    }
+    
+    // There's a connection waiting to be accepted
+    if (FD_ISSET(kServerInfo_.server_fd, &read_fds)) {
+      int new_socket;
+      if ((new_socket = accept(kServerInfo_.server_fd, (struct sockaddr *)&kServerInfo_.address, (socklen_t*)&addrlen)) < 0) {
+        perror("accept failed");
+        throw std::runtime_error("An error occurred while accepting socket connection");
+      }
+      
+      LOG_DEBUG("Connection accepted!");
+      scheduling::Worker worker(executor_, new_socket);
+      thread_pool_.AddTask(std::move(worker));
+    }
   }
 }
 
