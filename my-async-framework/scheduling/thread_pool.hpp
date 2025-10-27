@@ -1,6 +1,6 @@
 #pragma once
 
-#include "queues/unbounded_spmc_queue.hpp"
+#include "queues/unbounded_sync_spmc_queue.hpp"
 
 #include <thread>
 #include <iostream>
@@ -9,7 +9,7 @@
 
 namespace MyAsyncFramework::scheduling {
 
-using Queue = queues::UnboundedSpMcQueue<>;
+using Queue = queues::UnboundedSyncSpMcQueue<>;
 
 class ThreadWorkerExecutor {
 public:

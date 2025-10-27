@@ -8,18 +8,21 @@
 
 namespace MyAsyncFramework::scheduling::queues {
 
-// Unbounded Single Producer Multiple Consumers Queue
+/*
+Unbounded Sync Single Producer Multiple Consumers Queue
+Sync means that queue sleeps (with sleep(10ms)) in PopFront until queue is not empty
+*/
 template <typename Underlying = std::deque<Worker>> // TODO: think of adding concepts and multiple args templates
-class UnboundedSpMcQueue {
+class UnboundedAsyncSpMcQueue {
 public:
-  UnboundedSpMcQueue() = default;
+  UnboundedAsyncSpMcQueue() = default;
 
-  UnboundedSpMcQueue(const UnboundedSpMcQueue&) = delete;
-  UnboundedSpMcQueue(UnboundedSpMcQueue&&) = delete;
-  UnboundedSpMcQueue& operator=(UnboundedSpMcQueue&&) = delete;
-  UnboundedSpMcQueue& operator=(const UnboundedSpMcQueue&) = delete;
+  UnboundedAsyncSpMcQueue(const UnboundedAsyncSpMcQueue&) = delete;
+  UnboundedAsyncSpMcQueue(UnboundedAsyncSpMcQueue&&) = delete;
+  UnboundedAsyncSpMcQueue& operator=(UnboundedAsyncSpMcQueue&&) = delete;
+  UnboundedAsyncSpMcQueue& operator=(const UnboundedAsyncSpMcQueue&) = delete;
 
-  ~UnboundedSpMcQueue() = default;
+  ~UnboundedAsyncSpMcQueue() = default;
 
   void PushBack(Worker&& f) {
     std::lock_guard<std::mutex> lock_guard(mutex_);
