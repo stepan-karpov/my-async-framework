@@ -125,26 +125,6 @@ make
 
 Server listens on `localhost:8081` by default. Press `Ctrl+C` for graceful shutdown.
 
-## IDE Integration
-
-### VS Code (IntelliSense)
-
-The project is configured with:
-
-- `.vscode/c_cpp_properties.json` - IntelliSense configuration
-- `.clangd` - Language server configuration
-- `.vscode/settings.json` - Code Runner setup
-
-Both tools recognize `fmt` includes and C++20 features.
-
-### Compile Commands
-
-Build generates `compile_commands.json` for:
-
-- Better IDE autocompletion
-- Accurate error reporting
-- Code navigation support
-
 ## Architecture
 
 ```
@@ -189,13 +169,3 @@ Logs include millisecond timestamps and are thread-safe:
 [14:23:46.456] [DEBUG] Executor 0 executing task
 [14:23:46.789] [INFO] Handling connection 4
 ```
-
-## Contributing
-
-1. Add new executors in `my-server/executors/`
-2. Configure logging level in `my-server/static_settings.hpp`
-3. Extend framework in `my-async-framework/`
-
-## License
-
-Educational project - free to use and modify.
