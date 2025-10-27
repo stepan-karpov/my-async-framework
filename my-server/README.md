@@ -17,7 +17,7 @@ The server consists of three main components:
 
 - **Main Entry Point** (`main.cpp`): Initializes the server with a custom executor
 - **Executors** (`executors/`): Pluggable handlers for processing client connections
-- **Static Settings** (`static_settings.hpp`): Centralized configuration
+- **Framework Config** (`../my-async-framework/static_settings.hpp`): Centralized configuration
 
 ## Building
 

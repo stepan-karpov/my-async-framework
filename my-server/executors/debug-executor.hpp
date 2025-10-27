@@ -1,10 +1,10 @@
 #pragma once
 
-namespace MyServer::executors {
 
+namespace MyServer::executors {
 /*
 Simple executor that receives a text message and sends "Hello from server!" to the client.
 */
-void SimpleExecutor(const int socket);
+void DebugExecutor(const int socket);
 
 } // namespace MyServer::executors

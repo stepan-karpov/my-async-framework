@@ -7,6 +7,6 @@
 // #define LOG_LEVEL_ERROR
 
 #define PORT 8081
-#define BUFFER_SIZE 1024
 
-#define DEBUG_MODE true
+#define DEBUG_MODE
+

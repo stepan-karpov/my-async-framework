@@ -69,7 +69,7 @@ Press `F8` (Code Runner) to build and run automatically with debug mode enabled.
 
 ## Configuration
 
-Edit `my-server/static_settings.hpp` to configure:
+Edit `my-async-framework/static_settings.hpp` to configure:
 
 ### Log Levels
 
@@ -83,7 +83,6 @@ Edit `my-server/static_settings.hpp` to configure:
 
 ```cpp
 #define PORT 8081           // Server listening port
-#define BUFFER_SIZE 1024    // Socket buffer size
 ```
 
 ## Usage Example

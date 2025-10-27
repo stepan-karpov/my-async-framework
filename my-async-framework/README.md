@@ -46,7 +46,7 @@ int main() {
 
 ## Logging
 
-Configure log level in `static_settings.hpp`:
+Configure log level in `my-async-framework/static_settings.hpp`:
 
 ```cpp
 #define LOG_LEVEL_DEBUG  // Most verbose

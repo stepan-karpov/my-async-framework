@@ -2,6 +2,7 @@ add_executable(
   my-server-bin
   main.cpp
   executors/simple-executor.cpp
+  executors/debug-executor.cpp
 )
 
 

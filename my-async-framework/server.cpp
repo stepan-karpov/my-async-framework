@@ -8,6 +8,8 @@
 #include <atomic>        // For interrupt flag
 #include <thread>        // For sleep_for
 
+#include <my-async-framework/static_settings.hpp>
+
 using namespace MyAsyncFramework;
 
 // Global flag for tracking Ctrl+C press
@@ -65,6 +67,31 @@ Server::ServerInfo Server::InitializeServer() {
   return server_info;
 }
 
+void Server::Listen() {
+  const int addrlen = sizeof(kServerInfo_.address);
+
+  // 4. Accept incoming connection (this is a blocking call)
+  while (!should_stop) {
+    int new_socket;
+    if ((new_socket = accept(kServerInfo_.server_fd, (struct sockaddr *)&kServerInfo_.address, (socklen_t*)&addrlen)) < 0) {
+      perror("accept failed");
+      throw std::runtime_error("An error occurred while accepting socket connection");
+    }
+    LOG_DEBUG("Connection accepted!");
+    scheduling::Worker worker(executor_, new_socket);
+    thread_pool_.AddTask(std::move(worker));
+  }
+}
+
+void Server::ListenDebug() {
+  for (size_t _ = 0; _ < 15u; ++_) {
+    LOG_DEBUG("Connection accepted!");
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    scheduling::Worker worker(executor_, 1);
+    thread_pool_.AddTask(std::move(worker));
+  }
+}
+
 void Server::ListenAndServe() {
   // Register SIGINT (Ctrl+C) signal handler
   signal(SIGINT, signalHandler);
@@ -78,29 +105,11 @@ void Server::ListenAndServe() {
     throw std::runtime_error("Failed to start listening");
   }
 
-  const int addrlen = sizeof(kServerInfo_.address);
-
-  const int kDummyTasks = 15;
-  int k = 0;
-
-  while (!should_stop) {
-    ++k;
-    if (k >= kDummyTasks) { should_stop = true; }
-    LOG_DEBUG("checking...");
-
-    // 4. Accept incoming connection (this is a blocking call)
-    // int new_socket;
-    // if ((new_socket = accept(kServerInfo_.server_fd, (struct sockaddr *)&kServerInfo_.address, (socklen_t*)&addrlen)) < 0) {
-    //   perror("accept failed");
-    //   throw std::runtime_error("An error occurred while accepting socket connection");
-    // }
-    LOG_DEBUG("Connection accepted!");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10)); // for debugging
-    scheduling::Worker worker(executor_, 1);
-    thread_pool_.AddTask(std::move(worker));
-
-    // executor_(new_socket);  // Call the executor function
-  }
+#ifdef DEBUG_MODE
+  ListenDebug();
+#else
+  Listen();
+#endif
 
   thread_pool_.Stop();
 
