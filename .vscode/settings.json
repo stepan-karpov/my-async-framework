@@ -61,7 +61,8 @@
     "thread": "cpp",
     "queue": "cpp",
     "stack": "cpp",
-    "__nullptr": "cpp"
+    "__nullptr": "cpp",
+    "condition_variable": "cpp"
   },
   "files.exclude": {
     "**/*.trash": true

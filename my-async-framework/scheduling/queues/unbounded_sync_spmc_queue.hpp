@@ -36,7 +36,7 @@ public:
 
     while (is_container_empty) {
       unique_lock.unlock();
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      std::this_thread::sleep_for(std::chrono::milliseconds(10)); // Haha
       unique_lock.lock();
       is_container_empty = underlying_container_.empty();
     }

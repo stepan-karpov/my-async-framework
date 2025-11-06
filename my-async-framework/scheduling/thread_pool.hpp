@@ -23,7 +23,7 @@ public:
     while (true) {
       auto next_worker = thread_pool_queue_.PopFront();
       LOG_DEBUG(fmt::format("ThreadWorkerExecutor number {} executing his task", kMyNumberAsAThread_));
-      next_worker();
+      next_worker(); // TODO: think of exceptions?
     }
     LOG_DEBUG(fmt::format("ThreadWorkerExecutor number {} stopped", kMyNumberAsAThread_));
   }
