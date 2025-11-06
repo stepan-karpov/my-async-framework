@@ -4,6 +4,8 @@
 #include <mutex>
 #include <thread>
 
+#include <my-async-framework/sync/mutex.hpp>
+
 #include "../worker.hpp"
 
 namespace MyAsyncFramework::scheduling::queues {
@@ -25,13 +27,13 @@ public:
   ~UnboundedSyncSpMcQueue() = default;
 
   void PushBack(Worker&& f) {
-    std::lock_guard<std::mutex> lock_guard(mutex_);
+    std::lock_guard<MyAsyncFramework::sync::Mutex> lock_guard(mutex_);
     underlying_container_.push_back(std::move(f));
   }
 
   // Blocking method!
   Worker PopFront() {
-    std::unique_lock<std::mutex> unique_lock(mutex_);
+    std::unique_lock<MyAsyncFramework::sync::Mutex> unique_lock(mutex_);
     bool is_container_empty = underlying_container_.empty();
 
     while (is_container_empty) {
@@ -48,7 +50,7 @@ public:
 
   size_t Size() { return underlying_container_.size(); }
 private:
-  std::mutex mutex_;
+  MyAsyncFramework::sync::Mutex mutex_;
   Underlying underlying_container_;
 };
 

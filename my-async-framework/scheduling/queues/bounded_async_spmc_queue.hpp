@@ -5,6 +5,8 @@
 #include <thread>
 #include <condition_variable>
 
+#include <my-async-framework/sync/mutex.hpp>
+
 #include "../worker.hpp"
 
 namespace MyAsyncFramework::scheduling::queues {
@@ -27,7 +29,7 @@ public:
   ~BoundedAsyncSpMcQueue() = default;
 
   void PushBack(Worker&& f) {
-    std::lock_guard<std::mutex> lock_guard(mutex_);
+    std::lock_guard<MyAsyncFramework::sync::Mutex> lock_guard(mutex_);
     not_full_.wait(lock, [this]{
       return underlying_container_.size() < kMaxQueueSize
     });
@@ -37,7 +39,7 @@ public:
 
   // Blocking method!
   Worker PopFront() {
-    std::unique_lock<std::mutex> unique_lock(mutex_);
+    std::unique_lock<MyAsyncFramework::sync::Mutex> unique_lock(mutex_);
     not_empty_.wait(lock, [this]{
       return underlying_container_.size() > 0
     });
@@ -49,7 +51,7 @@ public:
 
   size_t Size() { return underlying_container_.size(); }
 private:
-  std::mutex mutex_;
+  MyAsyncFramework::sync::Mutex mutex_;
   std::condition_variable not_empty_;
   std::condition_variable not_full_;
   Underlying underlying_container_;
