@@ -14,7 +14,15 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
   GIT_TAG 10.1.1
 )
-FetchContent_MakeAvailable(fmt) 
+FetchContent_MakeAvailable(fmt)
+
+# Download Google Test
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG v1.14.0
+)
+FetchContent_MakeAvailable(googletest) 
 
 add_subdirectory(my-server)
 add_subdirectory(my-async-framework)
