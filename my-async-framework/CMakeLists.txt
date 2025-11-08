@@ -13,9 +13,8 @@ target_include_directories(my-async-framework
 target_link_libraries(my-async-framework PUBLIC fmt::fmt)
 
 # Log level configuration (can be overridden via -DLOG_LEVEL=ERROR)
-if(NOT DEFINED LOG_LEVEL)
-  set(LOG_LEVEL "DEBUG")
-endif()
+# Default to DEBUG if not specified
+set(LOG_LEVEL "DEBUG" CACHE STRING "Log level (DEBUG, WARNING, INFO, ERROR)")
 
 # Determine log level macro name
 if(LOG_LEVEL STREQUAL "ERROR")

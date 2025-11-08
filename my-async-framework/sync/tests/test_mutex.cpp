@@ -52,7 +52,7 @@ template <typename Mutex>
 long long CheckMutexSpeed(Mutex& mutex) {
   int shared_int = 0;
   auto start = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < 300'000; ++i) {
+  for (int i = 0; i < 30'000'000; ++i) {
     std::unique_lock lock(mutex);
     ++shared_int;
   }

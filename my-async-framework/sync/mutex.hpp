@@ -6,32 +6,32 @@
 
 namespace MyAsyncFramework::sync {
 
-class Mutex {
-public:
-  void Lock() { mutex_.lock(); }
-  void Unlock() { mutex_.unlock(); }
-  void lock() { mutex_.lock(); }
-  void unlock() { mutex_.unlock(); }
-private:
-  std::mutex mutex_;
-};
+// class Mutex {
+// public:
+//   void Lock() { mutex_.lock(); }
+//   void Unlock() { mutex_.unlock(); }
+//   void lock() { mutex_.lock(); }
+//   void unlock() { mutex_.unlock(); }
+// private:
+//   std::mutex mutex_;
+// };
 
-/* 
+
 
 class Mutex {
 public:
   void Lock() {
-    int64_t zero = 0;
+    uint32_t zero = 0u;
 
-    if (flag_.compare_exchange_strong(zero, 1) == 0) {
-      while (flag_.exchange(2) != 0) {
-        futex_wait(&flag_, 2);
+    if (!flag_.compare_exchange_strong(zero, 1u)) {
+      while (flag_.exchange(2u) != 0u) {
+        futex_wait(&flag_, 2u);
       }
     }
   }
 
   void Unlock() {
-    if (flag_.exchange(0) == 2) {
+    if (flag_.exchange(0u) == 2u) {
       futex_wake(&flag_, 1);
     }
   }
@@ -47,6 +47,7 @@ private:
   Atomic flag_{0};
 };
 
+/* 
 --------------------------------------------------
 
 The realization below is a naive but wrong one. It can get UB in case:
@@ -73,7 +74,7 @@ class Event {
   CondVar fire_;
 };
 
-TWIST_RANDOMIZE(Storage, 5s) {
+TEST(Storage, 5s) {
   auto event = new Event{};
 
   twist::ed::std::thread t([event] {
