@@ -22,7 +22,6 @@ inline void futex_wake(volatile Atomic* futex_addr, int count) {
 
 #include <pthread.h>
 #include <errno.h>
-#include <tuple>
 
 inline pthread_mutex_t g_futex_mutex = PTHREAD_MUTEX_INITIALIZER;
 inline pthread_cond_t g_futex_cond = PTHREAD_COND_INITIALIZER;
