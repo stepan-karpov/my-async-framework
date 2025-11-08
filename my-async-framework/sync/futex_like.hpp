@@ -44,7 +44,7 @@ inline void futex_wake(volatile Atomic *futex_addr, int count) {
   (void) futex_addr;
   pthread_mutex_lock(&g_futex_mutex);
   /*
-  this peace of shit doesn't work, spend all night debugging :(
+  this piece of shit doesn't work, spend all night debugging :(
   use broadcast instead for MacOs
 
   if (count == 1) {
