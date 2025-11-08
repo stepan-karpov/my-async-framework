@@ -8,6 +8,18 @@ namespace MyAsyncFramework::sync {
 
 class Mutex {
 public:
+  void Lock() { mutex_.lock(); }
+  void Unlock() { mutex_.unlock(); }
+  void lock() { mutex_.lock(); }
+  void unlock() { mutex_.unlock(); }
+private:
+  std::mutex mutex_;
+};
+
+/* 
+
+class Mutex {
+public:
   void Lock() {
     int64_t zero = 0;
 
@@ -35,11 +47,9 @@ private:
   Atomic flag_{0};
 };
 
-} // namespace MyAsyncFramework::sync
+--------------------------------------------------
 
-/* 
-
-This is a naive but wrong realization. This realization can get UB in case:
+The realization below is a naive but wrong one. It can get UB in case:
 (https://gitlab.com/Lipovsky/concurrency-course/-/blob/master/tasks/sync/condvar/tests/event/storage.cpp?ref_type=heads)
 
 class Event {
@@ -83,6 +93,7 @@ we've "unlocked" our mutex at line "locked_.store(0);" but we can not wake
 all the others simultaneously.
 So in this file you can find pretty strange but at least correct realization of mutex
 
+
 class Mutex {
 public:
   void Lock() {
@@ -99,11 +110,15 @@ public:
       futex_wake(&locked_, 1);
     }
   }
+  // BasicLockable https://en.cppreference.com/w/cpp/named_req/BasicLockable
+  void lock() { Lock(); }
+  void unlock() { Unlock(); }
 
 private:
   Atomic locked_{0};
   Atomic blocked_number_{0}; // For no needless wake up 
 };
 
-
 */
+
+} // namespace MyAsyncFramework::sync

@@ -50,6 +50,14 @@ set(TEST_EXECUTABLES
 foreach(test_target IN LISTS TEST_EXECUTABLES)
   target_link_libraries(${test_target} PRIVATE my-async-framework GTest::gtest GTest::gtest_main)
   target_compile_definitions(${test_target} PUBLIC ${LOG_LEVEL_MACRO})
+  
+  # Apply sanitizers if enabled
+  if(DEFINED SANITIZER)
+    set_target_properties(${test_target} PROPERTIES
+      COMPILE_FLAGS "-fsanitize=${SANITIZER}"
+      LINK_FLAGS "-fsanitize=${SANITIZER}"
+    )
+  endif()
 endforeach()
 
 

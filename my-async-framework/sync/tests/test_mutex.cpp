@@ -15,9 +15,15 @@
 using namespace MyAsyncFramework::sync;
 
 TEST(MutexTest, Basic) {
+  const int N = 100'000;
+  std::atomic<int> counter{0};
   Mutex mutex;
-  mutex.Lock();
-  mutex.Unlock();
+  for (int i = 0; i < N; ++i) {
+    mutex.Lock();
+    counter.fetch_add(1);
+    mutex.Unlock();
+  }
+  ASSERT_EQ(counter.load(), N);
 }
 
 TEST(MutexTest, MutexCriticalSection) {

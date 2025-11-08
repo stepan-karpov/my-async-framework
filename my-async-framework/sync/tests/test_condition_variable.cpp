@@ -17,13 +17,12 @@ TEST(ConditionVariableTest, Basic) {
   ConditionVariable cond_var;
 
   std::thread t1([&]{
-    mutex.Lock();
+    std::lock_guard<Mutex> lock(mutex);
     ASSERT_EQ(visited, false);
     while (!visited) {
       ++sleeping;
       cond_var.Wait(mutex);
     }
-    mutex.Unlock();
   });
 
   std::this_thread::sleep_for(std::chrono::milliseconds(50));

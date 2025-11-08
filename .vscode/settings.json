@@ -62,7 +62,8 @@
     "queue": "cpp",
     "stack": "cpp",
     "__nullptr": "cpp",
-    "condition_variable": "cpp"
+    "condition_variable": "cpp",
+    "concepts": "cpp"
   },
   "files.exclude": {
     "**/*.trash": true
