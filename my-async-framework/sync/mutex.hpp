@@ -2,6 +2,7 @@
 
 #include <my-async-framework/sync/atomic.hpp>
 #include <my-async-framework/sync/futex_like.hpp>
+#include <mutex>
 
 namespace MyAsyncFramework::sync {
 
@@ -12,7 +13,7 @@ public:
 
     if (flag_.compare_exchange_strong(zero, 1) == 0) {
       while (flag_.exchange(2) != 0) {
-        futex_wait(&flag_, 1);
+        futex_wait(&flag_, 2);
       }
     }
   }

@@ -6,11 +6,11 @@
 #include <my-async-framework/logging/logging.hpp>
 
 #include "scheduling/worker.hpp"
-#include "sync/queues/unbounded_async_spmc_queue.hpp"
+#include "sync/queues/unbounded_mpmc_queue.hpp"
 
 namespace MyAsyncFramework::scheduling {
 
-using Queue = queues::UnboundedMpMcQueue<Worker>;
+using Queue = MyAsyncFramework::sync::queues::UnboundedMpMcQueue<Worker>;
 
 class ThreadWorkerExecutor {
 public:

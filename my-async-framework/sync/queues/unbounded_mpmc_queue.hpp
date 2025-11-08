@@ -9,7 +9,7 @@
 
 #include <my-async-framework/sync/mutex.hpp>
 
-namespace MyAsyncFramework::scheduling::queues {
+namespace MyAsyncFramework::sync::queues {
 
 /*
 Unbounded Multiple Producers Multiple Consumers Queue
@@ -67,4 +67,4 @@ private:
   std::deque<T> underlying_container_;
 };
 
-} // namespace MyAsyncFramework::scheduling::Queue
+} // namespace MyAsyncFramework::sync::queues

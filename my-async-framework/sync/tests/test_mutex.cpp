@@ -14,7 +14,7 @@
 
 using namespace MyAsyncFramework::sync;
 
-TEST(MutexTest, BasicMutex) {
+TEST(MutexTest, Basic) {
   Mutex mutex;
   mutex.Lock();
   mutex.Unlock();
@@ -65,7 +65,7 @@ TEST(MutexTest, MutexSpeed) {
 }
 
 
-TEST(Storage, LifetimeIssue) {
+TEST(MutexTest, LifetimeIssue) {
   class Event {
    public:
     void Wait() {
