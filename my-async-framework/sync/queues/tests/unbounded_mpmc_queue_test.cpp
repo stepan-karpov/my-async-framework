@@ -27,6 +27,17 @@ TEST(UnboundedMpMcQueueTest, Basic) {
   ASSERT_EQ(queue.PopFront(), std::nullopt);
 }
 
+TEST(UnboundedMpMcQueueTest, StressTest) {
+  UnboundedMpMcQueue<int> queue;
+  for (int i = 0; i < 10'000'000; ++i) {
+    if (rand() % 2 == 0 && queue.Size() > 0) {
+      queue.PopFront();
+    } else {
+      queue.PushBack(i);
+    }
+  }
+}
+
 TEST(UnboundedMpMcQueueTest, Locking) {
   UnboundedMpMcQueue<int> queue;
   bool visited = false;
@@ -46,12 +57,12 @@ TEST(UnboundedMpMcQueueTest, Locking) {
 }
 
 struct Base {
-  Base() { std::cout << "Base default constructor\n"; ++default_constr; }
-  Base(Base&& other) { std::cout << "Base move constructor\n"; ++move_constr; }
-  Base(const Base& other) { std::cout << "Base copy constructor\n"; ++copy_constr; }
-  Base& operator=(const Base& other) { std::cout << "Base operator= copy\n"; ++operator_eq_copy; return *this; }
-  Base& operator=(Base&& other) { std::cout << "Base operator= move\n"; ++operator_eq_move; return *this; }
-  ~Base() { std::cout << "Base destructor\n"; ++destructor; }
+  Base() { ++default_constr; }
+  Base(Base&& other) { ++move_constr; }
+  Base(const Base& other) { ++copy_constr; }
+  Base& operator=(const Base& other) { ++operator_eq_copy; return *this; }
+  Base& operator=(Base&& other) { ++operator_eq_move; return *this; }
+  ~Base() { ++destructor; }
   
   static int default_constr;
   static int move_constr;

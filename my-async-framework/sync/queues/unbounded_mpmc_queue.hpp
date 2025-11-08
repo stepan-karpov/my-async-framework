@@ -59,6 +59,7 @@ public:
     not_empty_.NotifyAll();
   }
 
+  // for info only
   size_t Size() { return underlying_container_.size(); }
 private:
   bool is_closed = false;
