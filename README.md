@@ -53,19 +53,14 @@ See [`my-server/README.md`](my-server/README.md) for details.
 
 ```bash
 mkdir build && cd build
-cmake .. -DDEBUG_MODE=ON
+cmake ..
 cmake --build .
 ./my-server/my-server-bin
 ```
 
 ### Using VS Code
 
-Press `F8` (Code Runner) to build and run automatically with debug mode enabled.
-
-### Debug vs Release
-
-- **Debug mode** (`-DDEBUG_MODE=ON`): Includes `LOG_DEBUG` messages, debug symbols
-- **Release mode** (default): Only INFO/ERROR/WARNING logs, optimized binary
+Press `F8` (Code Runner) to build and run automatically
 
 ## Configuration
 
@@ -141,7 +136,7 @@ Server listens on `localhost:8081` by default. Press `Ctrl+C` for graceful shutd
               │
               ▼
 ┌──────────────────────────────────────────┐
-│          Unbounded SPMC Queue            │
+│          Unbounded MPMC Queue            │
 └────────────┬─────────────────────────────┘
               │
               ▼

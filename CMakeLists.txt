@@ -7,6 +7,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Sanitizer support
+# Usage: cmake .. -DSANITIZER=address|thread|undefined|address,undefined
+if(DEFINED SANITIZER)
+  set(SANITIZER_FLAGS "-fsanitize=${SANITIZER}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZER_FLAGS}")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SANITIZER_FLAGS}")
+  message(STATUS "Sanitizers enabled: ${SANITIZER}")
+endif()
+
 # Download fmt library
 include(FetchContent)
 FetchContent_Declare(

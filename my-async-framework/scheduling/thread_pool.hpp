@@ -1,15 +1,16 @@
 #pragma once
 
-#include "queues/unbounded_sync_spmc_queue.hpp"
-
 #include <thread>
 #include <iostream>
 
 #include <my-async-framework/logging/logging.hpp>
 
+#include "scheduling/worker.hpp"
+#include "sync/queues/unbounded_mpmc_queue.hpp"
+
 namespace MyAsyncFramework::scheduling {
 
-using Queue = queues::UnboundedSyncSpMcQueue<>;
+using Queue = MyAsyncFramework::sync::queues::UnboundedMpMcQueue<Worker>;
 
 class ThreadWorkerExecutor {
 public:
@@ -21,9 +22,12 @@ public:
 
   void Execute() {
     while (true) {
-      auto next_worker = thread_pool_queue_.PopFront();
+      auto next_task = thread_pool_queue_.PopFront();
+      if (!next_task.has_value()) {
+        break;
+      }
       LOG_DEBUG(fmt::format("ThreadWorkerExecutor number {} executing his task", kMyNumberAsAThread_));
-      next_worker(); // TODO: think of exceptions?
+      next_task.value()(); // TODO: think of exceptions?
     }
     LOG_DEBUG(fmt::format("ThreadWorkerExecutor number {} stopped", kMyNumberAsAThread_));
   }
@@ -38,17 +42,17 @@ public:
   ThreadPool(const int worker_threads);
   ~ThreadPool();
 
-  void AddTask(Worker&& worker) {
-    queue_.PushBack(std::move(worker));
-  }
+  void AddTask(Worker&& worker);
   void Stop();
-private:
-  void AllocateAndStartWorkerThreads();
+  void Start();
 
+private:
+  bool is_started = false;
+  bool is_stopped_ = false;
   Queue queue_;
   std::vector<std::thread> worker_threads_;
 
-  const int kWorkerThreads = 4;
+  const int kWorkerThreads = 8;
 };
 
 } // namespace MyAsyncFramework::scheduling
