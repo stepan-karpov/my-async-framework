@@ -18,6 +18,10 @@ inline void futex_wake(volatile Atomic* futex_addr, int count) {
     syscall(SYS_futex, futex_addr, FUTEX_WAKE, count, NULL, NULL, 0);
 }
 
+inline void futex_wake_all(volatile Atomic* futex_addr) {
+    futex_wake(futex_addr, INT_MAX);
+}
+
 #else
 
 #include <pthread.h>
@@ -44,6 +48,14 @@ inline void futex_wake(volatile Atomic *futex_addr, int count) {
     } else {
       pthread_cond_broadcast(&g_futex_cond);
     }
+    pthread_mutex_unlock(&g_futex_mutex);
+}
+
+// not a true futex!
+inline void futex_wake_all(volatile Atomic *futex_addr) {
+    (void) futex_addr;
+    pthread_mutex_lock(&g_futex_mutex);
+    pthread_cond_broadcast(&g_futex_cond);
     pthread_mutex_unlock(&g_futex_mutex);
 }
 

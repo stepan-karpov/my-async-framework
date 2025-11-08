@@ -23,7 +23,7 @@ The server consists of three main components:
 
 ```bash
 cd build
-cmake .. -DDEBUG_MODE=ON
+cmake ..
 cmake --build .
 ./my-server-bin
 ```

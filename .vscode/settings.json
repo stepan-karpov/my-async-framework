@@ -68,7 +68,7 @@
     "**/*.trash": true
   },
   "code-runner.executorMap": {
-    "cpp": "if [[ \"$dir\" == *\".sandbox\"* ]]; then cd \"$dir\" && clang++ -O2 -fsanitize=undefined -fsanitize=address -std=c++20 \"$fileName\" -o \"$fileNameWithoutExt.trash\" && ./\"$fileNameWithoutExt.trash\"; else cd \"$workspaceRoot/build\" && cmake .. -DDEBUG_MODE=ON && cmake --build . && ./my-server/my-server-bin; fi"
+    "cpp": "if [[ \"$dir\" == *\".sandbox\"* ]]; then cd \"$dir\" && clang++ -O2 -fsanitize=undefined -fsanitize=address -std=c++20 \"$fileName\" -o \"$fileNameWithoutExt.trash\" && ./\"$fileNameWithoutExt.trash\"; else cd \"$workspaceRoot/build\" && cmake .. && cmake --build . && ./my-server/my-server-bin; fi"
   },
   "code-runner.runInTerminal": true
 }

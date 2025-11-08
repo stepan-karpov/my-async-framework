@@ -8,7 +8,7 @@ namespace MyAsyncFramework::sync {
 class ConditionVariable {
 public:
   template <class Mutex>
-  void Wait(Mutex& mutex) {
+  void Wait(Mutex& mutex) { // TODO: add concept for "lock + unlock"
     counter_.fetch_add(1);
     int value = counter_.load();
 
@@ -23,7 +23,8 @@ public:
   }
 
   void NotifyAll() {
-    // TODO
+    counter_.fetch_add(1);
+    futex_wake_all(&counter_);
   }
 
 private:

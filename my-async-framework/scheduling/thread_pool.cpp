@@ -8,16 +8,13 @@ using namespace MyAsyncFramework::scheduling;
 
 ThreadPool::ThreadPool() {
   LOG_DEBUG("ThreadPool constructed");
-  AllocateAndStartWorkerThreads();
 }
 
 ThreadPool::ThreadPool(const int worker_threads) : kWorkerThreads(worker_threads) {
   LOG_DEBUG("ThreadPool constructed");
-  AllocateAndStartWorkerThreads();
 }
 
-
-void ThreadPool::AllocateAndStartWorkerThreads() {
+void ThreadPool::Start() {
   worker_threads_.reserve(kWorkerThreads);
   for (size_t i = 0; i < kWorkerThreads; ++i) {
     worker_threads_.emplace_back([this, i]() {
@@ -25,22 +22,38 @@ void ThreadPool::AllocateAndStartWorkerThreads() {
       executor.Execute();
     });
   }
+  is_started = true;
   LOG_DEBUG(fmt::format("{} threads started", kWorkerThreads));
 }
 
 void ThreadPool::Stop() {
+  if (!is_started) {
+    LOG_ERROR("ThreadPool can not be stopped since it wasn't started\n");
+    throw std::runtime_error("ThreadPool can not be stopped since it wasn't started\n");
+  }
+
   LOG_DEBUG("Stopping ThreadPool");
 
+  queue_.Close();
+
   for (auto& worker_thread : worker_threads_) {
-    pthread_t thread_handle = worker_thread.native_handle();
-    int result = pthread_cancel(thread_handle); // TODO: think of more safe thread cancellation
-    if (result != 0) {
-      LOG_ERROR(fmt::format("Error sending signal: {}", result));
-    }
     worker_thread.join();
   }
 
   LOG_DEBUG(fmt::format("Number of uncompleted tasks in Thread Pool is {}", queue_.Size()));
 }
 
-ThreadPool::~ThreadPool() {}
+void ThreadPool::AddTask(Worker&& worker) {
+  if (!is_started) {
+    LOG_ERROR("ThreadPool can not be filled since it wasn't started\n");
+    throw std::runtime_error("ThreadPool can not be filled since it wasn't started\n");
+  }
+  queue_.PushBack(std::move(worker));
+}
+
+ThreadPool::~ThreadPool() {
+  if (!is_started) {
+    LOG_ERROR("ThreadPool wasn't stopped manually\n");
+    Stop();
+  }
+}

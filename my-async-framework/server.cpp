@@ -30,13 +30,17 @@ Server::Server(ExecutorFunctionType executor)
   : thread_pool_(),
     kPort_(DEFAULT_PORT), 
     kServerInfo_(InitializeServer()),
-    executor_(executor) {}
+    executor_(executor) {
+  thread_pool_.Start();
+}
 
 Server::Server(const int port, ExecutorFunctionType executor)
   : thread_pool_(),
     kPort_(port),
     kServerInfo_(InitializeServer()),
-    executor_(executor) {}
+    executor_(executor) {
+  thread_pool_.Start();
+}
 
 Server::~Server() {
   close(kServerInfo_.server_fd);
@@ -111,15 +115,6 @@ void Server::Listen() {
   }
 }
 
-void Server::ListenDebug() {
-  for (size_t _ = 0; _ < 15u; ++_) {
-    LOG_DEBUG("Connection accepted!");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    scheduling::Worker worker(executor_, 1);
-    thread_pool_.AddTask(std::move(worker));
-  }
-}
-
 void Server::ListenAndServe() {
   // Register SIGINT (Ctrl+C) signal handler
   signal(SIGINT, signalHandler);
@@ -133,11 +128,7 @@ void Server::ListenAndServe() {
     throw std::runtime_error("Failed to start listening");
   }
 
-#ifdef DEBUG_MODE
-  ListenDebug();
-#else
   Listen();
-#endif
 
   thread_pool_.Stop();
 

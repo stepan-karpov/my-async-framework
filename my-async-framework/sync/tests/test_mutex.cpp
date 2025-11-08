@@ -1,4 +1,4 @@
-// cmake .. -DDEBUG_MODE=ON && cmake --build . && ./my-async-framework/test-mutex
+// cmake .. && cmake --build . && ./my-async-framework/test-mutex
 
 #include <thread>
 #include <vector>
