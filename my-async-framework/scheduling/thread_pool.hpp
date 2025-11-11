@@ -5,8 +5,8 @@
 
 #include <my-async-framework/logging/logging.hpp>
 
-#include "scheduling/worker.hpp"
-#include "sync/queues/unbounded_mpmc_queue.hpp"
+#include <my-async-framework/scheduling/worker.hpp>
+#include <my-async-framework/sync/queues/unbounded_mpmc_queue.hpp>
 
 namespace MyAsyncFramework::scheduling {
 

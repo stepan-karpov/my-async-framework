@@ -26,17 +26,9 @@ void signalHandler(int signum) {
 
 } // namespace
 
-Server::Server(ExecutorFunctionType executor)
+Server::Server(ExecutorFunctionType executor, const int port)
   : thread_pool_(),
-    kPort_(DEFAULT_PORT), 
-    kServerInfo_(InitializeServer()),
-    executor_(executor) {
-  thread_pool_.Start();
-}
-
-Server::Server(const int port, ExecutorFunctionType executor)
-  : thread_pool_(),
-    kPort_(port),
+    kPort_(port), 
     kServerInfo_(InitializeServer()),
     executor_(executor) {
   thread_pool_.Start();

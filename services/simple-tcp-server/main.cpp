@@ -10,9 +10,10 @@
 #include "executors/debug-executor.hpp"
 
 #define Executor MyServer::executors::SimpleExecutor
+#define PORT 8082
 
 int main() {
-  MyAsyncFramework::Server server(Executor);
+  MyAsyncFramework::Server server(Executor, PORT);
 
   server.ListenAndServe();
   return 0;
