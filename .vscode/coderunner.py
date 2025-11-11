@@ -18,10 +18,15 @@ if [[ "$dir" == *".sandbox"* ]]; then
               "$fileName" -o "$fileNameWithoutExt.trash" &&
   ./"$fileNameWithoutExt.trash";
 else
-  cd "$workspaceRoot/build" &&
-  cmake .. &&
-  cmake --build . &&
-  ./my-server/my-server-bin;
+  cd "$workspaceRoot/my-async-framework" &&
+  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+  cmake --build build &&
+  cmake --install build --prefix ~/local/my-async-framework &&
+
+  cd "$workspaceRoot/services/simple-tcp-server" &&
+  cmake -S . -B build -DCMAKE_PREFIX_PATH=~/local/my-async-framework -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+  cmake --build build &&
+  ./build/SimpleTCPServer;
 fi
 """
 
