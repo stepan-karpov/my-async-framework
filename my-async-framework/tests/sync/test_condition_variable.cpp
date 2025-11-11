@@ -1,5 +1,3 @@
-// cmake .. && cmake --build . && ./my-async-framework/test-condition-variable
-
 #include <thread>
 #include <condition_variable>
 

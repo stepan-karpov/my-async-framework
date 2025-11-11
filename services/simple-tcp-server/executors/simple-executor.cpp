@@ -14,7 +14,7 @@ const int kSimpleExecutorBufferSize = 12;
 
 void SimpleExecutor(const int socket) {
   for (int i = 0; i < 50000; ++i) {
-    // 5. Читаем данные от клиента
+    // 5. Read data from client
     char buffer[kSimpleExecutorBufferSize] = {0};
     read(socket, buffer, kSimpleExecutorBufferSize);
     size_t sum = 0;

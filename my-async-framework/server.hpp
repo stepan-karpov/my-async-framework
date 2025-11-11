@@ -3,9 +3,8 @@
 #include <functional>
 #include <netinet/in.h>  // For sockaddr_in
 
-#include "scheduling/thread_pool.hpp"
+#include <my-async-framework/scheduling/thread_pool.hpp>
 
-#define DEFAULT_PORT 8082
 #define LISTEN_QUEUE_SIZE 1024
 
 namespace MyAsyncFramework {
@@ -17,8 +16,7 @@ using ThreadPool = scheduling::ThreadPool;
 class Server {
 public:
   Server() = delete;
-  Server(ExecutorFunctionType executor);  
-  Server(const int port, ExecutorFunctionType executor);
+  Server(ExecutorFunctionType executor, const int port);
 
   Server(const Server&) = delete;
   Server(Server&&) = delete;
@@ -37,7 +35,6 @@ private:
 
   ServerInfo InitializeServer();
   void Listen();
-  void ListenDebug();
 
   ThreadPool thread_pool_;
 

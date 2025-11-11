@@ -1,13 +1,10 @@
 #pragma once
 
-#include "logging/logging.hpp"
-#include "sync/condition_variable.hpp"
 #include <deque>
-#include <mutex>
-#include <thread>
-#include <condition_variable>
 
+#include <my-async-framework/logging/logging.hpp>
 #include <my-async-framework/sync/mutex.hpp>
+#include <my-async-framework/sync/condition_variable.hpp>
 
 namespace MyAsyncFramework::sync::queues {
 
@@ -59,6 +56,7 @@ public:
     not_empty_.NotifyAll();
   }
 
+  // for info only
   size_t Size() { return underlying_container_.size(); }
 private:
   bool is_closed = false;

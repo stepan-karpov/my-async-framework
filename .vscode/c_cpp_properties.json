@@ -8,20 +8,22 @@
       "compilerArgs": ["-std=c++20", "-stdlib=libc++"],
       "includePath": [
         "${workspaceFolder}/**",
-        "${workspaceFolder}/build/_deps/fmt/include"
+        "${workspaceFolder}/my-async-framework",
+        "${workspaceFolder}/my-async-framework/build/_deps/fmt-src/include"
       ],
-      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+      "compileCommands": "${workspaceFolder}/my-async-framework/build/compile_commands.json"
     },
     {
-        "name": "Linux",
-        "includePath": [
-            "${workspaceFolder}/**",
-            "${workspaceFolder}/build/_deps/fmt/include"
-        ],
-        "defines": [],
-        "cStandard": "c17",
-        "intelliSenseMode": "linux-clang-x64",
-        "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+      "name": "Linux",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/my-async-framework",
+        "${workspaceFolder}/my-async-framework/build/_deps/fmt-src/include"
+      ],
+      "defines": [],
+      "cStandard": "c17",
+      "intelliSenseMode": "linux-clang-x64",
+      "compileCommands": "${workspaceFolder}/my-async-framework/build/compile_commands.json"
     }
   ],
   "version": 4

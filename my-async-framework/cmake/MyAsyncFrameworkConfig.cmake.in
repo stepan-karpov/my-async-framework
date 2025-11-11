@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+# Automatically find dependencies
+include(CMakeFindDependencyMacro)
+find_dependency(fmt REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/MyAsyncFrameworkTargets.cmake")
+
+
