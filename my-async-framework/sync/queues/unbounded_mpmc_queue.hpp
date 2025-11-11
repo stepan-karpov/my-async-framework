@@ -1,9 +1,6 @@
 #pragma once
 
 #include <deque>
-#include <mutex>
-#include <thread>
-#include <condition_variable>
 
 #include <my-async-framework/logging/logging.hpp>
 #include <my-async-framework/sync/mutex.hpp>

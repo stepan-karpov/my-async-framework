@@ -1,8 +1,8 @@
 #include "thread_pool.hpp"
 
-#include <my-async-framework/logging/logging.hpp>
-
 #include <iostream>
+
+#include <my-async-framework/logging/logging.hpp>
 
 using namespace MyAsyncFramework::scheduling;
 

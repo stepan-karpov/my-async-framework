@@ -10,84 +10,116 @@ This project implements a production-ready TCP server with configurable thread p
 
 ```
 .
-├── my-async-framework/    # Core asynchronous framework
+├── my-async-framework/    # Core asynchronous framework library
 │   ├── scheduling/        # Thread pool and queues
-│   └── logging/           # Thread-safe logging system
-├── my-server/             # Server application
-│   └── executors/         # Custom connection handlers
-└── build/                 # Build output directory
+│   ├── logging/           # Thread-safe logging system
+│   ├── sync/              # Synchronization primitives (mutex, condition variable)
+│   └── tests/             # Unit tests
+├── services/              # Server applications
+    ├── simple-tcp-server/  # Example TCP server implementation
+    │   └── executors/     # Custom connection handlers
+    └── my-client/         # Go client for testing
 ```
 
 ## Components
 
 ### my-async-framework
 
-Core infrastructure providing:
+Core infrastructure library providing:
 
 - **Server**: TCP server accepting connections on configurable ports
-- **Thread Pool**: Worker threads executing tasks concurrently
-- **Unbounded SPMC Queue**: Lock-free task distribution
+- **Thread Pool**: Configurable pool of worker threads (default: 8) executing tasks concurrently
+- **Unbounded MPMC Queue**: Lock-free queue for task distribution across workers
 - **Logging System**: Millisecond-precision, thread-safe logging with compile-time level filtering
+- **Synchronization Primitives**: Custom mutex and condition variable implementations
 
 See [`my-async-framework/README.md`](my-async-framework/README.md) for details.
 
-### my-server
+### services/simple-tcp-server
 
-Application layer demonstrating:
+Example server application demonstrating:
 
 - Connection acceptance and delegation
-- Custom executor implementations
-- Configuration management
+- Custom executor implementations (SimpleExecutor, DebugExecutor)
+- Integration with the framework
 
-See [`my-server/README.md`](my-server/README.md) for details.
+See [`services/README.md`](services/README.md) for details.
 
 ## Requirements
 
 - **C++20** compiler (clang++ or g++)
-- **CMake 3.10+**
+- **CMake 3.19+** (for framework) or **CMake 3.10+** (for services)
 - **POSIX** system (macOS, Linux)
+- **fmt** library (v10.1.1) - downloaded automatically by CMake
 
 ## Building
 
-### Manual Build
+### Building the Framework
+
+First, build and install the framework:
 
 ```bash
-mkdir build && cd build
-cmake ..
-cmake --build .
-./my-server/my-server-bin
+cd my-async-framework
+cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build
+cmake --install build --prefix ~/local/my-async-framework
+```
+
+### Building a Service
+
+After installing the framework, build a service:
+
+```bash
+cd services/simple-tcp-server
+cmake -S . -B build -DCMAKE_PREFIX_PATH=~/local/my-async-framework -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build
+./build/SimpleTCPServer
 ```
 
 ### Using VS Code
 
-Press `F8` (Code Runner) to build and run automatically
+Press `F8` (Code Runner) to build and run automatically. The script will:
+
+1. Build and install the framework
+2. Build the simple-tcp-server service
+3. Run the server
 
 ## Configuration
 
-Edit `my-async-framework/static_settings.hpp` to configure:
-
 ### Log Levels
 
-```cpp
-#define LOG_LEVEL_DEBUG    // Most verbose (includes thread pool internals)
-#define LOG_LEVEL_INFO     // Standard logging (default)
-#define LOG_LEVEL_ERROR    // Errors only
+Configure log level via CMake when building the framework:
+
+```bash
+cmake -S . -B build -DLOG_LEVEL=DEBUG    # Most verbose
+cmake -S . -B build -DLOG_LEVEL=INFO     # Standard logging
+cmake -S . -B build -DLOG_LEVEL=WARNING  # Warnings and errors
+cmake -S . -B build -DLOG_LEVEL=ERROR    # Errors only
 ```
 
-### Network Settings
+Available levels: `DEBUG`, `WARNING`, `INFO`, `ERROR`. Default is `DEBUG`.
+
+### Server Port
+
+Configure the server port in your service's `main.cpp`:
 
 ```cpp
-#define PORT 8081           // Server listening port
+#define PORT 8082
+MyAsyncFramework::Server server(Executor, PORT);
 ```
+
+### Thread Pool Size
+
+The thread pool defaults to 8 worker threads. To customize, modify `kWorkerThreads` in `my-async-framework/scheduling/thread_pool.hpp` or pass a custom value to the `ThreadPool` constructor.
 
 ## Usage Example
 
 ```cpp
 #include <my-async-framework/server.hpp>
-#include <my-server/executors/simple-executor.hpp>
+#include "executors/simple-executor.hpp"
 
 int main() {
-  MyAsyncFramework::Server server(SimpleExecutor);
+  MyAsyncFramework::Server server(MyServer::executors::SimpleExecutor, 8082);
   server.ListenAndServe();  // Blocks until Ctrl+C
   return 0;
 }
@@ -95,29 +127,38 @@ int main() {
 
 ## Features
 
-- ✅ **Thread-safe**: All operations are synchronized with mutexes/atomics
+- ✅ **Thread-safe**: All operations are synchronized with custom mutexes/atomics
 - ✅ **Asynchronous**: Non-blocking connection handling via thread pool
 - ✅ **Configurable**: Adjust worker threads, log levels, ports
-- ✅ **Observable**: Structured logging with timestamps
+- ✅ **Observable**: Structured logging with millisecond timestamps
 - ✅ **Graceful shutdown**: SIGINT handling for clean termination
 - ✅ **Modern C++**: Uses C++20 features and best practices
+- ✅ **Tested**: Comprehensive unit tests for core components
 
 ## Dependencies
 
-- **fmt** (v10.1.1): String formatting library, downloaded automatically by CMake
+- **fmt** (v10.1.1): String formatting library, downloaded automatically by CMake via FetchContent
 - **C++ Standard Library**: Threading, networking, chrono
 - **POSIX sockets**: `socket`, `bind`, `listen`, `accept`
+- **GoogleTest** (v1.14.0): For unit tests (optional, enabled with `BUILD_TESTING=ON`)
 
 ## Running the Server
 
 ```bash
-cd build
-cmake ..
-make
-./my-server/my-server-bin
+# Build and install framework
+cd my-async-framework
+cmake -S . -B build
+cmake --build build
+cmake --install build --prefix ~/local/my-async-framework
+
+# Build and run service
+cd ../services/simple-tcp-server
+cmake -S . -B build -DCMAKE_PREFIX_PATH=~/local/my-async-framework
+cmake --build build
+./build/SimpleTCPServer
 ```
 
-Server listens on `localhost:8081` by default. Press `Ctrl+C` for graceful shutdown.
+Server listens on `localhost:8082` by default (configurable in `main.cpp`). Press `Ctrl+C` for graceful shutdown.
 
 ## Architecture
 
@@ -136,7 +177,7 @@ Server listens on `localhost:8081` by default. Press `Ctrl+C` for graceful shutd
               │
               ▼
 ┌──────────────────────────────────────────┐
-│          Unbounded MPMC Queue            │
+│      Unbounded MPMC Queue (lock-free)      │
 └────────────┬─────────────────────────────┘
               │
               ▼
@@ -144,13 +185,13 @@ Server listens on `localhost:8081` by default. Press `Ctrl+C` for graceful shutd
     │                   │
     ▼                   ▼
 ┌────────┐         ┌────────┐
-│Worker 1│         │Worker N│  ← Thread Pool
+│Worker 1│  ...   │Worker 8│  ← Thread Pool (default: 8 threads)
 └────┬───┘         └────┬───┘
      │                  │
      └──────────┬───────┘
                 ▼
       ┌──────────────────┐
-      │  Custom Executor  │
+      │  Custom Executor │  ← Your business logic
       └───────────────────┘
 ```
 
@@ -159,7 +200,11 @@ Server listens on `localhost:8081` by default. Press `Ctrl+C` for graceful shutd
 Logs include millisecond timestamps and are thread-safe:
 
 ```
-[14:23:45.123] [INFO] Server listening on port 8081
-[14:23:46.456] [DEBUG] Executor 0 executing task
-[14:23:46.789] [INFO] Handling connection 4
+[14:23:45.123] [INFO] Server listening on port 8082
+[14:23:46.456] [DEBUG] Executor 0 executing his task
+[14:23:46.789] [DEBUG] Connection accepted!
 ```
+
+## Testing
+
+The framework includes comprehensive unit tests. See [`my-async-framework/tests/README.md`](my-async-framework/tests/README.md) for details on building and running tests.

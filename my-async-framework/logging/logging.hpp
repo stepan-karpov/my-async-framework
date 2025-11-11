@@ -3,7 +3,6 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
-#include <mutex>
 #include <fmt/format.h>
 
 #include <my-async-framework/sync/mutex.hpp>

@@ -1,5 +1,5 @@
 """
-Скрипт для обновления команды запуска C++ в settings.json
+Script to update C++ execution command in settings.json
 """
 
 import json

@@ -2,21 +2,8 @@
 
 #include <my-async-framework/sync/atomic.hpp>
 #include <my-async-framework/sync/futex_like.hpp>
-#include <mutex>
 
 namespace MyAsyncFramework::sync {
-
-// class Mutex {
-// public:
-//   void Lock() { mutex_.lock(); }
-//   void Unlock() { mutex_.unlock(); }
-//   void lock() { mutex_.lock(); }
-//   void unlock() { mutex_.unlock(); }
-// private:
-//   std::mutex mutex_;
-// };
-
-
 
 class Mutex {
 public:

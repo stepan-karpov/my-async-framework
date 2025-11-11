@@ -63,7 +63,8 @@
     "stack": "cpp",
     "__nullptr": "cpp",
     "condition_variable": "cpp",
-    "concepts": "cpp"
+    "concepts": "cpp",
+    "iomanip": "cpp"
   },
   "files.exclude": {
     "**/*.trash": true,

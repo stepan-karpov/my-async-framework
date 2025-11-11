@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-# Автоматически находим зависимости
+# Automatically find dependencies
 include(CMakeFindDependencyMacro)
 find_dependency(fmt REQUIRED)
 

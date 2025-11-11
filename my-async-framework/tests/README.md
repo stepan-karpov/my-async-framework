@@ -1,46 +1,46 @@
-# Тесты MyAsyncFramework
+# MyAsyncFramework Tests
 
-Этот каталог содержит тесты для библиотеки MyAsyncFramework.
+This directory contains tests for the MyAsyncFramework library.
 
-## Сборка и запуск тестов
+## Building and Running Tests
 
-### Сборка библиотеки без тестов (по умолчанию)
+### Building the Library Without Tests (default)
 
 ```bash
-cd /Users/stepan-karpov/Desktop/my-server/my-async-framework
-cmake -B build
+cd my-async-framework
+cmake -S . -B build
 cmake --build build
 ```
 
-### Сборка библиотеки с тестами
+### Building the Library With Tests
 
 ```bash
-cd /Users/stepan-karpov/Desktop/my-server/my-async-framework
-cmake -B build -DBUILD_TESTING=ON
+cd my-async-framework
+cmake -S . -B build -DBUILD_TESTING=ON
 cmake --build build
 ```
 
-### Запуск тестов
+### Running Tests
 
-После сборки с включенными тестами:
+After building with tests enabled:
 
 ```bash
 cd build
 
-# Запустить все тесты
+# Run all tests
 ctest
 
-# Запустить с подробным выводом
+# Run with verbose output
 ctest --verbose
 
-# Запустить конкретный тест
+# Run a specific test
 ctest -R MutexTest
 
-# Запустить тесты параллельно
+# Run tests in parallel
 ctest -j 4
 ```
 
-### Запуск тестов вручную
+### Running Tests Manually
 
 ```bash
 cd build
@@ -50,42 +50,46 @@ cd build
 ./test-thread-pool
 ```
 
-### Опции сборки
+### Build Options
 
-#### Уровень логирования
+#### Log Level
 
 ```bash
-cmake -B build -DBUILD_TESTING=ON -DLOG_LEVEL=DEBUG
+cmake -S . -B build -DBUILD_TESTING=ON -DLOG_LEVEL=DEBUG
 cmake --build build
 ```
 
-Доступные уровни: `DEBUG`, `WARNING`, `INFO`, `ERROR`
+Available levels: `DEBUG`, `WARNING`, `INFO`, `ERROR`
 
-#### Санитайзеры
+#### Sanitizers
 
-Для включения санитайзеров (AddressSanitizer, UndefinedBehaviorSanitizer):
+To enable sanitizers (AddressSanitizer, UndefinedBehaviorSanitizer):
 
 ```bash
-cmake -B build -DBUILD_TESTING=ON -DSANITIZER=address,undefined
+cmake -S . -B build -DBUILD_TESTING=ON -DSANITIZER=address,undefined
 cmake --build build
 ```
 
-### Полный пример
+### Complete Example
 
 ```bash
-# Собрать библиотеку с тестами и санитайзерами
-cd /Users/stepan-karpov/Desktop/my-server/my-async-framework
-cmake -B build -DBUILD_TESTING=ON -DLOG_LEVEL=DEBUG -DSANITIZER=address,undefined
+# Build library with tests and sanitizers
+cd my-async-framework
+cmake -S . -B build -DBUILD_TESTING=ON -DLOG_LEVEL=DEBUG -DSANITIZER=address,undefined
 cmake --build build
 
-# Запустить тесты
+# Run tests
 cd build
 ctest --verbose
 ```
 
-### Структура тестов
+## Test Structure
 
-- `sync/test_mutex.cpp` - тесты для мьютекса
-- `sync/test_condition_variable.cpp` - тесты для condition variable
-- `sync/queues/unbounded_mpmc_queue_test.cpp` - тесты для очереди
-- `scheduling/test_thread_pool.cpp` - тесты для thread pool
+- `sync/test_mutex.cpp` - tests for mutex
+- `sync/test_condition_variable.cpp` - tests for condition variable
+- `sync/queues/unbounded_mpmc_queue_test.cpp` - tests for queue
+- `scheduling/test_thread_pool.cpp` - tests for thread pool
+
+## Dependencies
+
+Tests use GoogleTest (v1.14.0), which is automatically downloaded via CMake FetchContent when `BUILD_TESTING=ON` is enabled.
