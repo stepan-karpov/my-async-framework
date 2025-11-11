@@ -37,7 +37,6 @@ private:
 
   ServerInfo InitializeServer();
   void Listen();
-  void ListenDebug();
 
   ThreadPool thread_pool_;
 
