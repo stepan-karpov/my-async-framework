@@ -1,3 +1,7 @@
+# cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+# cmake --build build
+# cmake --install build --prefix ~/local/my-async-framework
+
 cmake_minimum_required(VERSION 3.19)
 
 project(MyAsyncFramework LANGUAGES CXX)
@@ -38,6 +42,10 @@ install(TARGETS MyAsyncFramework
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
 )
+
+# Устанавливаем fmt отдельно (fmt::fmt - это алиас, нужно установить реальный target)
+# fmt обычно предоставляет свой собственный install, но если нужно, можно установить вручную
+# Для этого нужно использовать install(EXPORT) для fmt или установить fmt отдельно
 
 file(GLOB_RECURSE MYASYNCFRAMEWORK_HEADERS CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
