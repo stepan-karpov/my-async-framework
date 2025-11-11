@@ -1,5 +1,3 @@
-// cmake .. && cmake --build . && ./my-async-framework/test-mutex
-
 #include <thread>
 #include <vector>
 #include <mutex>

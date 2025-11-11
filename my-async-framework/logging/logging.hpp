@@ -10,17 +10,11 @@
 // Thread-safe logging mutex (one instance shared across all translation units)
 inline MyAsyncFramework::sync::Mutex log_mutex;
 
-// configure via CMake: -DLOG_LEVEL=DEBUG|WARNING|INFO|ERROR
-// Default to DEBUG if no level is specified
+// Configure via CMake: -DLOG_LEVEL=0|1|2|3
+// LOG_LEVEL numeric values: 0=DEBUG, 1=WARNING, 2=INFO, 3=ERROR
 #ifndef DEFINED_LOG_LEVEL
-  #ifdef LOG_LEVEL_DEBUG
-    #define DEFINED_LOG_LEVEL 0
-  #elif defined(LOG_LEVEL_WARNING)
-    #define DEFINED_LOG_LEVEL 1
-  #elif defined(LOG_LEVEL_INFO)
-    #define DEFINED_LOG_LEVEL 2
-  #elif defined(LOG_LEVEL_ERROR)
-    #define DEFINED_LOG_LEVEL 3
+  #ifdef LOG_LEVEL
+    #define DEFINED_LOG_LEVEL LOG_LEVEL
   #else
     // Default to DEBUG if nothing is defined
     #define DEFINED_LOG_LEVEL 0

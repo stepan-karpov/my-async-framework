@@ -1,5 +1,3 @@
-// cmake .. -DSANITIZER=address,undefined -DLOG_LEVEL=DEBUG && cmake --build . && ./my-async-framework/test-thread-pool
-
 #include <thread>
 #include <condition_variable>
 

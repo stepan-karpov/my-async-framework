@@ -78,7 +78,6 @@ install(FILES
     DESTINATION lib/cmake/MyAsyncFramework
 )
 
-# Option to build tests (default OFF)
 option(BUILD_TESTING "Build tests" ON)
 
 if(BUILD_TESTING)
@@ -90,21 +89,10 @@ if(BUILD_TESTING)
     )
     FetchContent_MakeAvailable(googletest)
     
-    # Configure log level
+    # Configure log level (required parameter)
+    # LOG_LEVEL should be a numeric value: 0=DEBUG, 1=WARNING, 2=INFO, 3=ERROR
     if(NOT DEFINED LOG_LEVEL)
-        set(LOG_LEVEL "DEBUG")
-    endif()
-    
-    if(LOG_LEVEL STREQUAL "DEBUG")
-        set(LOG_LEVEL_MACRO "LOG_LEVEL_DEBUG")
-    elseif(LOG_LEVEL STREQUAL "WARNING")
-        set(LOG_LEVEL_MACRO "LOG_LEVEL_WARNING")
-    elseif(LOG_LEVEL STREQUAL "INFO")
-        set(LOG_LEVEL_MACRO "LOG_LEVEL_INFO")
-    elseif(LOG_LEVEL STREQUAL "ERROR")
-        set(LOG_LEVEL_MACRO "LOG_LEVEL_ERROR")
-    else()
-        set(LOG_LEVEL_MACRO "LOG_LEVEL_DEBUG")
+        message(FATAL_ERROR "LOG_LEVEL is required. Please specify: -DLOG_LEVEL=0|1|2|3")
     endif()
     
     # Create test executables
@@ -132,7 +120,7 @@ if(BUILD_TESTING)
         if(GTEST_INCLUDE_DIRS)
             target_include_directories(${test_target} PRIVATE ${GTEST_INCLUDE_DIRS})
         endif()
-        target_compile_definitions(${test_target} PUBLIC ${LOG_LEVEL_MACRO})
+        target_compile_definitions(${test_target} PUBLIC LOG_LEVEL=${LOG_LEVEL})
         
         # Link libraries in correct order:
         # GTest::gtest_main already includes GTest::gtest, so specify only it
@@ -147,8 +135,7 @@ if(BUILD_TESTING)
             find_package(Threads REQUIRED)
             target_link_libraries(${test_target} PRIVATE Threads::Threads)
         endif()
-        
-        # Apply sanitizers if enabled
+
         if(DEFINED SANITIZER)
             target_compile_options(${test_target} PRIVATE -fsanitize=${SANITIZER})
             target_link_options(${test_target} PRIVATE -fsanitize=${SANITIZER})

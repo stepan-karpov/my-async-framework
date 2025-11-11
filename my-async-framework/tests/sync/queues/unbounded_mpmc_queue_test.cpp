@@ -1,5 +1,3 @@
-// cmake .. && cmake --build . && ./my-async-framework/test-unbounded-mpmc-queue
-
 #include <chrono>
 #include <iostream>
 #include <thread>

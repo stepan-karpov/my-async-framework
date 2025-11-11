@@ -17,9 +17,15 @@ if [[ "$dir" == *".sandbox"* ]]; then
               -std=c++20 
               "$fileName" -o "$fileNameWithoutExt.trash" &&
   ./"$fileNameWithoutExt.trash";
+elif [[ "$dir" == *"my-async-framework/tests"* ]]; then
+  cd "$workspaceRoot/my-async-framework" &&
+  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=ON -DLOG_LEVEL=2 -DSANITIZER=address,undefined &&
+  cmake --build build &&
+  cd build &&
+  ctest;
 else
   cd "$workspaceRoot/my-async-framework" &&
-  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=ON -DLOG_LEVEL=0 &&
   cmake --build build &&
   cmake --install build --prefix ~/local/my-async-framework &&
 
