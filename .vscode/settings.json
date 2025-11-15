@@ -64,7 +64,8 @@
     "__nullptr": "cpp",
     "condition_variable": "cpp",
     "concepts": "cpp",
-    "iomanip": "cpp"
+    "iomanip": "cpp",
+    "future": "cpp"
   },
   "files.exclude": {
     "**/*.trash": true,
