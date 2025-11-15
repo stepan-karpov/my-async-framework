@@ -1,3 +1,5 @@
+// Also see epoll realization for Linux in my-async-framework/server.cpp
+
 #include <iostream>
 #include <string>
 #include <unistd.h>      // For close()
@@ -49,9 +51,9 @@ int main() {
 
     while (true) {
         // 4. Accept incoming connection (blocking call)
-        int new_socket;
         int addrlen = sizeof(address);
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
+        int new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen);
+        if (new_socket < 0) {
             perror("accept failed");
             close(server_fd);
             return 1;

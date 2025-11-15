@@ -27,6 +27,7 @@ public:
 
   // Locks parent process until SIGINT Signal
   void ListenAndServe();
+  
 private:
   struct ServerInfo {
     int server_fd;
@@ -34,7 +35,9 @@ private:
   };
 
   ServerInfo InitializeServer();
+
   void Listen();
+  void ListenMacOs();
 
   ThreadPool thread_pool_;
 
