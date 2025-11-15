@@ -46,9 +46,9 @@ void futex_wake(volatile Atomic *futex_addr, int count) {
     std::cout << "You're using MacOs\n";
     (void)futex_addr;
     pthread_mutex_lock(&g_futex_mutex);
-    if (count == 1)
-        pthread_cond_signal(&g_futex_cond);
-    else
+    // if (count == 1)
+        // pthread_cond_signal(&g_futex_cond);
+    // else
         pthread_cond_broadcast(&g_futex_cond);
     pthread_mutex_unlock(&g_futex_mutex);
 }
