@@ -16,6 +16,7 @@ void SimpleExecutor(const int socket) {
   for (int i = 0; i < 50000; ++i) {
     // 5. Read data from client
     char buffer[kSimpleExecutorBufferSize] = {0};
+    // TODO (very big and important todo): add fiber stop here
     read(socket, buffer, kSimpleExecutorBufferSize);
     size_t sum = 0;
     for (const char c : buffer) { sum += c; }
