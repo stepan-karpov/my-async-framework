@@ -25,12 +25,12 @@ elif [[ "$dir" == *"my-async-framework/tests"* ]]; then
   ctest;
 else
   cd "$workspaceRoot/my-async-framework" &&
-  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=ON -DLOG_LEVEL=0 &&
+  cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_TESTING=ON -DLOG_LEVEL=0 -DCMAKE_BUILD_TYPE=Debug &&
   cmake --build build &&
   cmake --install build --prefix ~/local/my-async-framework &&
 
   cd "$workspaceRoot/services/simple-tcp-server" &&
-  cmake -S . -B build -DCMAKE_PREFIX_PATH=~/local/my-async-framework -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+  cmake -S . -B build -DCMAKE_PREFIX_PATH=~/local/my-async-framework -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug &&
   cmake --build build &&
   ./build/SimpleTCPServer;
 fi
