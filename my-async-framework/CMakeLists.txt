@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.19)
 
-project(MyAsyncFramework LANGUAGES CXX)
+project(MyAsyncFramework LANGUAGES CXX ASM)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,7 +23,38 @@ file(GLOB_RECURSE MYASYNCFRAMEWORK_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
+# Add platform-specific assembly files and exclude platform-specific C++ files
+# Only compile the assembly file for the current platform to avoid conflicts
+# The C++ code uses preprocessor defines (__x86_64__, __aarch64__) to select headers,
+# but we need to compile only the matching assembly file to avoid linker conflicts
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64|i686")
+    # For x86_64, include x86_64 assembly and exclude ARM64 C++ files
+    file(GLOB_RECURSE X86_64_ASM_SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/coroutine/execution_context/machine/x86_64/*.S"
+    )
+    list(APPEND MYASYNCFRAMEWORK_SOURCES ${X86_64_ASM_SOURCES})
+    list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "armv8_a_64/context\\.cpp")
+    message(STATUS "Building for x86_64 platform")
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
+    # For ARM64, include ARM64 assembly and exclude x86_64 C++ files
+    file(GLOB_RECURSE ARM64_ASM_SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/coroutine/execution_context/machine/armv8_a_64/*.S"
+    )
+    list(APPEND MYASYNCFRAMEWORK_SOURCES ${ARM64_ASM_SOURCES})
+    list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "x86_64/context\\.cpp")
+    message(STATUS "Building for ARM64 platform")
+else()
+    message(WARNING "Unknown platform: CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}")
+    message(WARNING "Defaulting to x86_64. If this is incorrect, please set CMAKE_SYSTEM_PROCESSOR explicitly.")
+    file(GLOB_RECURSE X86_64_ASM_SOURCES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/coroutine/execution_context/machine/x86_64/*.S"
+    )
+    list(APPEND MYASYNCFRAMEWORK_SOURCES ${X86_64_ASM_SOURCES})
+    list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "armv8_a_64/context\\.cpp")
+endif()
+
 list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "/tests/")
+list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "test_coroutine\\.cpp")
 
 add_library(MyAsyncFramework STATIC ${MYASYNCFRAMEWORK_SOURCES})
 
@@ -100,6 +131,7 @@ if(BUILD_TESTING)
     add_executable(test-condition-variable tests/sync/test_condition_variable.cpp)
     add_executable(test-unbounded-mpmc-queue tests/sync/queues/unbounded_mpmc_queue_test.cpp)
     add_executable(test-thread-pool tests/scheduling/test_thread_pool.cpp)
+    add_executable(test-coroutine tests/scheduling/coroutine/test_coroutine.cpp)
     
     # List of test executables
     set(TEST_EXECUTABLES
@@ -107,6 +139,13 @@ if(BUILD_TESTING)
         test-condition-variable
         test-unbounded-mpmc-queue
         test-thread-pool
+        test-coroutine
+    )
+    
+    # List of test executables that should NOT use sanitizers
+    # (e.g., tests that use low-level assembly or context switching)
+    set(TEST_EXECUTABLES_NO_SANITIZER
+        test-coroutine
     )
     
     # Configure each test
@@ -136,9 +175,16 @@ if(BUILD_TESTING)
             target_link_libraries(${test_target} PRIVATE Threads::Threads)
         endif()
 
+        # Apply sanitizers only if SANITIZER is defined and test is not in exclusion list
         if(DEFINED SANITIZER)
-            target_compile_options(${test_target} PRIVATE -fsanitize=${SANITIZER})
-            target_link_options(${test_target} PRIVATE -fsanitize=${SANITIZER})
+            list(FIND TEST_EXECUTABLES_NO_SANITIZER ${test_target} IS_EXCLUDED)
+            if(IS_EXCLUDED EQUAL -1)
+                # Test is not in exclusion list, apply sanitizers
+                target_compile_options(${test_target} PRIVATE -fsanitize=${SANITIZER})
+                target_link_options(${test_target} PRIVATE -fsanitize=${SANITIZER})
+            else()
+                message(STATUS "Sanitizers disabled for ${test_target}")
+            endif()
         endif()
     endforeach()
     
@@ -157,6 +203,9 @@ if(BUILD_TESTING)
         PROPERTIES TIMEOUT 60
     )
     gtest_discover_tests(test-thread-pool
+        PROPERTIES TIMEOUT 60
+    )
+    gtest_discover_tests(test-coroutine
         PROPERTIES TIMEOUT 60
     )
 endif()
