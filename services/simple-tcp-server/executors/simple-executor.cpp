@@ -12,7 +12,8 @@ namespace MyServer::executors {
 
 const int kSimpleExecutorBufferSize = 12;
 
-void SimpleExecutor(const int socket) {
+void SimpleExecutor(Args&& args) {
+  const int socket = args.descriptor_;
   for (int i = 0; i < 50000; ++i) {
     // 5. Read data from client
     char buffer[kSimpleExecutorBufferSize] = {0};

@@ -5,10 +5,10 @@
 
 #include <my-async-framework/sync/mutex.hpp>
 #include <my-async-framework/sync/condition_variable.hpp>
-#include <my-async-framework/scheduling/thread_pool.hpp>
+#include <my-async-framework/scheduling/fiber/thread_pool/thread_pool.hpp>
 
 using namespace MyAsyncFramework::sync;
-using namespace MyAsyncFramework::scheduling;
+using namespace MyAsyncFramework::scheduling::fiber::thread_pool;
 
 TEST(ThreadPoolTest, Basic) {
   const int N = 100'000;
@@ -17,12 +17,13 @@ TEST(ThreadPoolTest, Basic) {
 
   std::atomic<int> counter{0};
   for (int i = 0; i < N; ++i) {
-    pool.AddTask(Worker([&counter](const int _) {
+    pool.AddTask(Worker([&counter]() {
       counter.fetch_add(1);
-    }, -1));
+    }));
   }
 
   pool.Stop();
+
   ASSERT_EQ(counter.load(), N);
 }
 

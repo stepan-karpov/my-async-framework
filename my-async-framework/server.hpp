@@ -3,15 +3,16 @@
 #include <functional>
 #include <netinet/in.h>  // For sockaddr_in
 
-#include <my-async-framework/scheduling/thread_pool.hpp>
+#include <my-async-framework/scheduling/fiber/thread_pool/thread_pool.hpp>
+#include <my-async-framework/scheduling/fiber/core/body.hpp>
 
 #define LISTEN_QUEUE_SIZE 1024
 
 namespace MyAsyncFramework {
 
 // Takes sockaddr_in and file descriptor number
-using ExecutorFunctionType = std::function<void(const int)>;
-using ThreadPool = scheduling::ThreadPool;
+using ExecutorFunctionType = MyAsyncFramework::scheduling::fiber::core::Body;
+using ThreadPool = scheduling::fiber::thread_pool::ThreadPool;
 
 class Server {
 public:

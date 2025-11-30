@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "scheduling/fiber/core/body.hpp"
 
 #include <iostream>
 #include <string>
@@ -15,6 +16,8 @@
 #endif
 
 #include <my-async-framework/static_settings.hpp>
+#include <my-async-framework/scheduling/fiber/sched/go.hpp>
+#include <my-async-framework/scheduling/fiber/core/body.hpp>
 
 // Explicit declaration for close() if not found
 extern "C" int close(int fd);
@@ -136,8 +139,11 @@ void Server::Listen() {
           throw std::runtime_error("An error occurred while accepting socket connection");
         }
         LOG_DEBUG("Connection accepted!");
-        scheduling::Worker worker(executor_, new_socket);
-        thread_pool_.AddTask(std::move(worker));
+        scheduling::fiber::sched::Go(
+          thread_pool_,
+          scheduling::fiber::core::Args{new_socket},
+          executor_
+        );
       }
     }
   }
@@ -182,8 +188,11 @@ void Server::ListenMacOs() {
       }
       
       LOG_DEBUG("Connection accepted!");
-      scheduling::Worker worker(executor_, new_socket);
-      thread_pool_.AddTask(std::move(worker));
+      scheduling::fiber::sched::Go(
+        thread_pool_,
+        scheduling::fiber::core::Args{new_socket},
+        executor_
+      );
     }
   }
 }

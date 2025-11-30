@@ -7,8 +7,8 @@
 
 namespace MyServer::executors {
 
-void DebugExecutor(const int socket) {
-  std::ignore = socket;
+void DebugExecutor(Args&& args) {
+  std::ignore = args;
   static std::atomic<int> total_called = 0;
 
   total_called.fetch_add(1);

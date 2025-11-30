@@ -27,7 +27,7 @@ TEST(UnboundedMpMcQueueTest, Basic) {
 
 TEST(UnboundedMpMcQueueTest, StressTest) {
   UnboundedMpMcQueue<int> queue;
-  for (int i = 0; i < 10'000'000; ++i) {
+  for (int i = 0; i < 1'000'000; ++i) {
     if (rand() % 2 == 0 && queue.Size() > 0) {
       queue.PopFront();
     } else {

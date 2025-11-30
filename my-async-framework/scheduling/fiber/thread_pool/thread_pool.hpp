@@ -5,10 +5,11 @@
 
 #include <my-async-framework/logging/logging.hpp>
 
-#include <my-async-framework/scheduling/worker.hpp>
 #include <my-async-framework/sync/queues/unbounded_mpmc_queue.hpp>
 
-namespace MyAsyncFramework::scheduling {
+#include "worker.hpp"
+
+namespace MyAsyncFramework::scheduling::fiber::thread_pool {
 
 using Queue = MyAsyncFramework::sync::queues::UnboundedMpMcQueue<Worker>;
 
@@ -55,5 +56,5 @@ private:
   const int kWorkerThreads = 8;
 };
 
-} // namespace MyAsyncFramework::scheduling
+} // namespace MyAsyncFramework::scheduling::fiber::thread_pool
 

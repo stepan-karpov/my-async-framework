@@ -30,7 +30,7 @@ file(GLOB_RECURSE MYASYNCFRAMEWORK_SOURCES CONFIGURE_DEPENDS
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64|i686")
     # For x86_64, include x86_64 assembly and exclude ARM64 C++ files
     file(GLOB_RECURSE X86_64_ASM_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/coroutine/execution_context/machine/x86_64/*.S"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/fiber/core/execution_context/machine/x86_64/*.S"
     )
     list(APPEND MYASYNCFRAMEWORK_SOURCES ${X86_64_ASM_SOURCES})
     list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "armv8_a_64/context\\.cpp")
@@ -38,7 +38,7 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64|i686")
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
     # For ARM64, include ARM64 assembly and exclude x86_64 C++ files
     file(GLOB_RECURSE ARM64_ASM_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/coroutine/execution_context/machine/armv8_a_64/*.S"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/fiber/core/execution_context/machine/armv8_a_64/*.S"
     )
     list(APPEND MYASYNCFRAMEWORK_SOURCES ${ARM64_ASM_SOURCES})
     list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "x86_64/context\\.cpp")
@@ -47,7 +47,7 @@ else()
     message(WARNING "Unknown platform: CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}")
     message(WARNING "Defaulting to x86_64. If this is incorrect, please set CMAKE_SYSTEM_PROCESSOR explicitly.")
     file(GLOB_RECURSE X86_64_ASM_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/coroutine/execution_context/machine/x86_64/*.S"
+        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/fiber/core/execution_context/machine/x86_64/*.S"
     )
     list(APPEND MYASYNCFRAMEWORK_SOURCES ${X86_64_ASM_SOURCES})
     list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "armv8_a_64/context\\.cpp")
@@ -130,8 +130,9 @@ if(BUILD_TESTING)
     add_executable(test-mutex tests/sync/test_mutex.cpp)
     add_executable(test-condition-variable tests/sync/test_condition_variable.cpp)
     add_executable(test-unbounded-mpmc-queue tests/sync/queues/unbounded_mpmc_queue_test.cpp)
-    add_executable(test-thread-pool tests/scheduling/test_thread_pool.cpp)
-    add_executable(test-coroutine tests/scheduling/coroutine/test_coroutine.cpp)
+    add_executable(test-thread-pool tests/scheduling/fiber/thread_pool/test_thread_pool.cpp)
+    add_executable(test-coroutine tests/scheduling/fiber/core/test_coroutine.cpp)
+    add_executable(test-fiber tests/scheduling/fiber/core/test_fiber.cpp)
     
     # List of test executables
     set(TEST_EXECUTABLES
@@ -140,12 +141,14 @@ if(BUILD_TESTING)
         test-unbounded-mpmc-queue
         test-thread-pool
         test-coroutine
+        test-fiber
     )
     
     # List of test executables that should NOT use sanitizers
     # (e.g., tests that use low-level assembly or context switching)
     set(TEST_EXECUTABLES_NO_SANITIZER
         test-coroutine
+        test-fiber
     )
     
     # Configure each test
@@ -206,6 +209,9 @@ if(BUILD_TESTING)
         PROPERTIES TIMEOUT 60
     )
     gtest_discover_tests(test-coroutine
+        PROPERTIES TIMEOUT 60
+    )
+    gtest_discover_tests(test-fiber
         PROPERTIES TIMEOUT 60
     )
 endif()

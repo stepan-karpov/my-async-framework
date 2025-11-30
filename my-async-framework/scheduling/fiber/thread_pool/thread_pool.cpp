@@ -1,10 +1,9 @@
 #include "thread_pool.hpp"
 
-#include <iostream>
-
 #include <my-async-framework/logging/logging.hpp>
+#include <stdexcept>
 
-using namespace MyAsyncFramework::scheduling;
+namespace MyAsyncFramework::scheduling::fiber::thread_pool {
 
 ThreadPool::ThreadPool() {
   LOG_DEBUG("ThreadPool constructed");
@@ -39,6 +38,7 @@ void ThreadPool::Stop() {
   for (auto& worker_thread : worker_threads_) {
     worker_thread.join();
   }
+  is_stopped_ = true;
 
   LOG_DEBUG(fmt::format("Number of uncompleted tasks in Thread Pool is {}", queue_.Size()));
 }
@@ -52,8 +52,10 @@ void ThreadPool::AddTask(Worker&& worker) {
 }
 
 ThreadPool::~ThreadPool() {
-  if (!is_started) {
+  if (!is_stopped_) {
     LOG_ERROR("ThreadPool wasn't stopped manually\n");
-    Stop();
+    throw std::runtime_error("ThreadPool wasn't stopped manually");
   }
 }
+
+} // namespace MyAsyncFramework::scheduling::fiber::thread_pool

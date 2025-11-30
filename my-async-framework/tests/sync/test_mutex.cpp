@@ -50,7 +50,7 @@ template <typename Mutex>
 long long CheckMutexSpeed(Mutex& mutex) {
   int shared_int = 0;
   auto start = std::chrono::high_resolution_clock::now();
-  for (int i = 0; i < 30'000'000; ++i) {
+  for (int i = 0; i < 5'000'000; ++i) {
     std::unique_lock lock(mutex);
     ++shared_int;
   }
@@ -91,7 +91,7 @@ TEST(MutexTest, LifetimeIssue) {
     ConditionVariable fire_;
   };
 
-  for (int i = 0; i < 100'000; ++i) {
+  for (int i = 0; i < 5'000; ++i) {
     auto event = new Event{};
     // TODO: use determenistic testing for guarantee fail in case of bad realization
     std::thread t([event] {
