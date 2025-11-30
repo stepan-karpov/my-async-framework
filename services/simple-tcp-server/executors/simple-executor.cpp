@@ -7,25 +7,26 @@
 #include <netinet/in.h>  // For sockaddr_in
 
 #include <my-async-framework/logging/logging.hpp>
+#include <my-async-framework/network/tcp/read.hpp>
+#include <my-async-framework/network/tcp/send.hpp>
 
 namespace MyServer::executors {
 
 const int kSimpleExecutorBufferSize = 12;
 
 void SimpleExecutor(Args&& args) {
-  const int socket = args.descriptor_;
+  const int fd = args.descriptor_;
   for (int i = 0; i < 50000; ++i) {
     // 5. Read data from client
     char buffer[kSimpleExecutorBufferSize] = {0};
-    // TODO (very big and important todo): add fiber stop here
-    read(socket, buffer, kSimpleExecutorBufferSize);
+    MyAsyncFramework::network::tcp::Read(fd, buffer, kSimpleExecutorBufferSize);
     size_t sum = 0;
     for (const char c : buffer) { sum += c; }
 
     std::string response_str = std::to_string(sum);
-    send(socket, response_str.c_str(), strlen(response_str.c_str()), 0);
+    MyAsyncFramework::network::tcp::Send(fd, response_str.c_str(), strlen(response_str.c_str()), 0);
   }
-  close(socket);
+  close(fd);
 }
 
 } // namespace MyServer::executors
