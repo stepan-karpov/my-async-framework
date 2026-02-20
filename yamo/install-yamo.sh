@@ -12,13 +12,16 @@ echo "Installing yamo to ${INSTALL_DIR}"
 mkdir -p "$INSTALL_DIR"
 cp -R "${SCRIPT_DIR}/." "${INSTALL_DIR}/"
 
-# 2. Virtual environment in ~/.yamo
+# 2. Add current framework path to ~/.yamo
+echo "FRAMEWORK_PATH=\"$(dirname "${SCRIPT_DIR}")\"" > ~/.yamo/framework_path.py
+
+# 3. Virtual environment in ~/.yamo
 echo "Creating virtual environment..."
 python3 -m venv "${INSTALL_DIR}/venv"
 "${INSTALL_DIR}/venv/bin/pip" install -q --upgrade pip
 "${INSTALL_DIR}/venv/bin/pip" install -q fire
 
-# 3–4. Launcher in /usr/local/bin (available as yamo)
+# 4–5. Launcher in /usr/local/bin (available as yamo)
 echo "Installing launcher to ${LAUNCHER} (sudo required)"
 sudo cp "${SCRIPT_DIR}/yamo-bin.sh" "$LAUNCHER"
 sudo chmod +x "$LAUNCHER"
