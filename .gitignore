@@ -2,3 +2,5 @@ build/
 *.trash
 .cache
 tempCodeRunnerFile.py
+yamo/venv
+*pycache*
