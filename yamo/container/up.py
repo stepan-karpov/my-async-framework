@@ -22,8 +22,10 @@ def up(service_name: str, e: bool = False):
   # 2. docker create with a unique container name
   container_name = f"{service_name}_{random.randint(10000, 99999)}"
   subprocess.run(
-    ["sudo", "docker", "run", "-d", "--name", container_name, service_name, "sleep", "infinity"],
-    check=True,
+      ["sudo", "docker", "run", "-d", "--name", container_name,
+      "-p", "8082:8082",
+      service_name],   # без "sleep", "infinity"
+      check=True,
   )
 
   if e:

@@ -7,6 +7,7 @@ from gen import main as gen_cmd
 from hi import main as hi_cmd
 
 from container import up, rm, enter
+from framework import update
 
 def main():
     """Главная функция для CLI команд."""
@@ -18,6 +19,9 @@ def main():
                 "up": up.up,
                 "rm": rm.rm,
                 "enter": enter.enter
+            },
+            "framework": {
+                "update": update.update
             }
         }
     )
