@@ -49,7 +49,7 @@ See [`services/README.md`](services/README.md) for details.
 
 - **C++20** compiler (clang++ or g++)
 - **CMake 3.19+** (for framework) or **CMake 3.10+** (for services)
-- **POSIX** system (macOS, Linux)
+- **Linux**
 - **fmt** library (v10.1.1) - downloaded automatically by CMake
 
 ## Building

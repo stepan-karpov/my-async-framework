@@ -38,7 +38,6 @@ private:
   ServerInfo InitializeServer();
 
   void Listen();
-  void ListenMacOs();
 
   ThreadPool thread_pool_;
 

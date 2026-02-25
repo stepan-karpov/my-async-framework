@@ -1,17 +1,11 @@
-#if defined(__APPLE__)
-  #define ASM_SYMBOL(name) _##name
-#else
-  #define ASM_SYMBOL(name) name
-#endif
-
-.global ASM_SYMBOL(SetupMachineContext)
-.global ASM_SYMBOL(SwitchMachineContext)
+.global SetupMachineContext
+.global SwitchMachineContext
 
 # https://eli.thegreenplace.net/2011/02/04/where-the-top-of-the-stack-is-on-x86/
 
 # SetupMachineContext(stack, trampoline, arg)
 
-ASM_SYMBOL(SetupMachineContext):
+SetupMachineContext:
     # Arguments
     # 1) %rdi - bottom of the stack
     # 2) %rsi - trampoline
@@ -55,7 +49,7 @@ ASM_SYMBOL(SetupMachineContext):
 
 # SwitchMachineContext(from_rsp, to_rsp)
 
-ASM_SYMBOL(SwitchMachineContext):
+SwitchMachineContext:
     # SwitchMachineContext frame created on top of the current stack
 
     # 1. Save current execution context to 'from'

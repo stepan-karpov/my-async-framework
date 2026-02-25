@@ -7,9 +7,6 @@
 #if defined(__x86_64__) || defined(_M_X64) || defined(__amd64__)
   #define SURE_PLATFORM_X86_64
   #include "machine/x86_64/context.hpp"
-#elif defined(__aarch64__) || defined(__arm64__) || defined(_M_ARM64)
-  #define SURE_PLATFORM_ARM64
-  #include "machine/armv8_a_64/context.hpp"
 #else
   #error "Unsupported platform. Only x86_64 and ARM64 are supported."
 #endif

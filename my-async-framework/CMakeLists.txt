@@ -10,6 +10,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Fetching dependencies
 include(FetchContent)
 
 FetchContent_Declare(
@@ -19,42 +20,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmt)
 
+file(GLOB_RECURSE MYASYNCFRAMEWORK_HEADERS CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
+)
 file(GLOB_RECURSE MYASYNCFRAMEWORK_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.S"
 )
-
-# Add platform-specific assembly files and exclude platform-specific C++ files
-# Only compile the assembly file for the current platform to avoid conflicts
-# The C++ code uses preprocessor defines (__x86_64__, __aarch64__) to select headers,
-# but we need to compile only the matching assembly file to avoid linker conflicts
-if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64|amd64|i686")
-    # For x86_64, include x86_64 assembly and exclude ARM64 C++ files
-    file(GLOB_RECURSE X86_64_ASM_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/fiber/core/execution_context/machine/x86_64/*.S"
-    )
-    list(APPEND MYASYNCFRAMEWORK_SOURCES ${X86_64_ASM_SOURCES})
-    list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "armv8_a_64/context\\.cpp")
-    message(STATUS "Building for x86_64 platform")
-elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARM64")
-    # For ARM64, include ARM64 assembly and exclude x86_64 C++ files
-    file(GLOB_RECURSE ARM64_ASM_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/fiber/core/execution_context/machine/armv8_a_64/*.S"
-    )
-    list(APPEND MYASYNCFRAMEWORK_SOURCES ${ARM64_ASM_SOURCES})
-    list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "x86_64/context\\.cpp")
-    message(STATUS "Building for ARM64 platform")
-else()
-    message(WARNING "Unknown platform: CMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}")
-    message(WARNING "Defaulting to x86_64. If this is incorrect, please set CMAKE_SYSTEM_PROCESSOR explicitly.")
-    file(GLOB_RECURSE X86_64_ASM_SOURCES CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/scheduling/fiber/core/execution_context/machine/x86_64/*.S"
-    )
-    list(APPEND MYASYNCFRAMEWORK_SOURCES ${X86_64_ASM_SOURCES})
-    list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "armv8_a_64/context\\.cpp")
-endif()
-
 list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "/tests/")
-list(FILTER MYASYNCFRAMEWORK_SOURCES EXCLUDE REGEX "test_coroutine\\.cpp")
 
 add_library(MyAsyncFramework STATIC ${MYASYNCFRAMEWORK_SOURCES})
 
@@ -64,7 +37,6 @@ target_include_directories(MyAsyncFramework
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
         $<INSTALL_INTERFACE:include>
 )
-
 target_link_libraries(MyAsyncFramework PUBLIC fmt::fmt)
 
 install(TARGETS MyAsyncFramework
@@ -78,9 +50,6 @@ install(TARGETS MyAsyncFramework
 # fmt usually provides its own install, but if needed, can be installed manually
 # For this, use install(EXPORT) for fmt or install fmt separately
 
-file(GLOB_RECURSE MYASYNCFRAMEWORK_HEADERS CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
-)
 
 foreach(HEADER ${MYASYNCFRAMEWORK_HEADERS})
     file(RELATIVE_PATH REL_HEADER ${CMAKE_CURRENT_SOURCE_DIR} ${HEADER})
@@ -172,12 +141,6 @@ if(BUILD_TESTING)
             MyAsyncFramework
         )
         
-        # Explicitly add pthread for macOS (required for futex_like.hpp)
-        if(APPLE OR UNIX)
-            find_package(Threads REQUIRED)
-            target_link_libraries(${test_target} PRIVATE Threads::Threads)
-        endif()
-
         # Apply sanitizers only if SANITIZER is defined and test is not in exclusion list
         if(DEFINED SANITIZER)
             list(FIND TEST_EXECUTABLES_NO_SANITIZER ${test_target} IS_EXCLUDED)
