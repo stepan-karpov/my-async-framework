@@ -78,8 +78,6 @@ install(FILES
     DESTINATION lib/cmake/MyAsyncFramework
 )
 
-option(BUILD_TESTING "Build tests" ON)
-
 if(BUILD_TESTING)
     # Load GoogleTest only if tests are needed
     FetchContent_Declare(

@@ -20,6 +20,7 @@ echo "Creating virtual environment..."
 python3 -m venv "${INSTALL_DIR}/venv"
 "${INSTALL_DIR}/venv/bin/pip" install -q --upgrade pip
 "${INSTALL_DIR}/venv/bin/pip" install -q fire
+"${INSTALL_DIR}/venv/bin/pip" install pexpect
 
 # 4–5. Launcher in /usr/local/bin (available as yamo)
 echo "Installing launcher to ${LAUNCHER} (sudo required)"

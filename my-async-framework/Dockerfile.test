@@ -1,5 +1,5 @@
-# Base image for services using MyAsyncFramework.
-# Build from repo root: yamo framework update 
+# Base image for testing MyAsyncFramework.
+# Build from repo root: yamo framework test *test arguments* 
 
 FROM ubuntu:24.04
 
@@ -14,8 +14,8 @@ COPY my-async-framework /app/my-async-framework
 
 WORKDIR /app/my-async-framework
 
-RUN cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DLOG_LEVEL=0 && \
+RUN cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DLOG_LEVEL=3 -DBUILD_TESTING=ON && \
     cmake --build build && \
     cmake --install build --prefix /usr/local
 
-WORKDIR /app
+WORKDIR /app/my-async-framework/build
