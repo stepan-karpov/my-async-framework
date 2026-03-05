@@ -7,6 +7,11 @@ from framework_path import FRAMEWORK_PATH
 from container import enter
 
 def up(service_name: str, e: bool = False):
+  """Запускает сервис в новом контейнере.
+
+    Args:
+        e: Зайти в контейнер после запуска.
+  """
   service_dir = Path(FRAMEWORK_PATH) / "services" / service_name
   if not service_dir.is_dir():
     print(f"Service directory not found: {service_dir}")
