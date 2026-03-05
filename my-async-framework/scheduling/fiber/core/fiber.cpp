@@ -6,19 +6,15 @@ namespace MyAsyncFramework::scheduling::fiber::core {
 
 thread_local Fiber* current_fiber_thrloc;
 
-FiberWrapper::FiberWrapper(Fiber* fiber)
-  : fiber_(fiber) {}
-  
-FiberWrapper::FiberWrapper(const FiberWrapper& other)
-  : fiber_(other.fiber_) {}
-
-void FiberWrapper::operator()() {
-  current_fiber_thrloc = fiber_;
-  fiber_->coroutine_.Resume();
-  if (!fiber_->coroutine_.IsDone()) {
-    fiber_->thread_pool_.AddTask(FiberWrapper(fiber_));
+void Fiber::operator()() {
+  current_fiber_thrloc = this;
+  coroutine_.Resume();
+  if (!coroutine_.IsDone()) {
+    thread_pool_.AddTask([this] {
+      (*this)();
+    });
   } else {
-    delete fiber_;
+    delete this;
   }
 }
 
@@ -31,7 +27,9 @@ thread_pool::ThreadPool& Fiber::GetThreadPool() {
 }
 
 void Fiber::Schedule() {
-  thread_pool_.AddTask(FiberWrapper(this));
+  thread_pool_.AddTask([this]{
+    (*this)();
+  });
 }
 
 void Fiber::Yield() {

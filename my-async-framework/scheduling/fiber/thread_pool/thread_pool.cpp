@@ -3,6 +3,8 @@
 #include <my-async-framework/logging/logging.hpp>
 #include <stdexcept>
 
+#include "thread_worker_executor.hpp"
+
 namespace MyAsyncFramework::scheduling::fiber::thread_pool {
 
 ThreadPool::ThreadPool() {
