@@ -1,4 +1,5 @@
 
+import pexpect
 import random
 import subprocess
 
@@ -39,9 +40,6 @@ def test():
         check=True,
     )
     print(f"Started container {container_name} from image {FRAMEWORK_IMAGE_NAME}")
-    # subprocess.run(["sudo", "docker", "exec", "-it", container_name, "bash"])
-    import pexpect
-    import pexpect
 
     child = pexpect.spawn(
         "sudo docker exec -it %s bash" % container_name,
